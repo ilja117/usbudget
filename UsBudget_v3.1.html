@@ -1,0 +1,2300 @@
+<!DOCTYPE html>
+<html lang="uk" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UsBudget — Спільний бюджет пари · v3.1</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js для інтерактивних графіків -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Firebase SDKs (v9 Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fdf2f8',
+              100: '#fce7f3',
+              500: '#ec4899',
+              600: '#db2777',
+              700: '#be185d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .pp-locked > :not(.pp-lockbox) { display: none !important; }
+    .custom-scrollbar::-webkit-scrollbar { height: 4px; width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 9999px; }
+  </style>
+
+  <!-- UsBudget v3.1: двигун тем (токени для світлої й темної теми) -->
+  <style id="usbudget-theme-engine">
+    /* 1. Палітри місяців (світлі значення). Темні похідні рахуються автоматично нижче. */
+    html[data-season="november"] { --p-page:#f7f1e7; --p-card:#fffdf8; --p-soft:#eee3d1; --p-border:#ddc7a7; --p-accent:#87552f; --p-ga:#6f4931; --p-gb:#c28a4b; }
+    html[data-season="december"] { --p-page:#edf5f1; --p-card:#fbfffc; --p-soft:#deeee6; --p-border:#bdd8ca; --p-accent:#17644f; --p-ga:#155c49; --p-gb:#a63849; }
+    html[data-season="january"]  { --p-page:#eef5fb; --p-card:#fcfeff; --p-soft:#e1edf7; --p-border:#c5d9e9; --p-accent:#356b9d; --p-ga:#356b9d; --p-gb:#8bbbd7; }
+    html[data-season="february"] { --p-page:#fbf0f3; --p-card:#fffafb; --p-soft:#f4e1e8; --p-border:#e7c4d0; --p-accent:#a34467; --p-ga:#963b61; --p-gb:#d17d98; }
+    html[data-season="march"]    { --p-page:#f1f6ed; --p-card:#fdfff9; --p-soft:#e5eedf; --p-border:#cadbc1; --p-accent:#52784e; --p-ga:#52784e; --p-gb:#c18b68; }
+    html[data-season="april"]    { --p-page:#f4f0fa; --p-card:#fffefe; --p-soft:#ebe5f5; --p-border:#d7cde9; --p-accent:#71609b; --p-ga:#75619e; --p-gb:#8cb9a3; }
+
+    html[data-season="may"]       { --p-page:#f6f8ef; --p-card:#fffffb; --p-soft:#e7efd6; --p-border:#cfdcb4; --p-accent:#357a42; --p-ga:#357a42; --p-gb:#e7a1b0; }
+    html[data-season="june"]      { --p-page:#fcf9e6; --p-card:#fffef6; --p-soft:#f6f0c6; --p-border:#e8dea0; --p-accent:#9c6b00; --p-ga:#9c6b00; --p-gb:#f2c94c; }
+    html[data-season="july"]      { --p-page:#eaf7f6; --p-card:#fbffff; --p-soft:#d5eeec; --p-border:#b3dbd7; --p-accent:#13808b; --p-ga:#13808b; --p-gb:#f08a6c; }
+    html[data-season="august"]    { --p-page:#faf3df; --p-card:#fffdf4; --p-soft:#f3e8c4; --p-border:#e3d39b; --p-accent:#1f5fa8; --p-ga:#1f5fa8; --p-gb:#e5b93c; }
+    html[data-season="september"] { --p-page:#f8f0e4; --p-card:#fffcf6; --p-soft:#f0e0c8; --p-border:#e0c9a4; --p-accent:#b4532a; --p-ga:#a8481f; --p-gb:#d9a441; }
+    html[data-season="october"]   { --p-page:#f6eef0; --p-card:#fffafb; --p-soft:#ecdce2; --p-border:#dcc0cb; --p-accent:#7d3c58; --p-ga:#6e2f4d; --p-gb:#c9774b; }
+
+    /* 2. Токени режиму: світла тема */
+    html[data-season]:not(.dark) {
+      color-scheme: light;
+      --s-page: var(--p-page); --s-card: var(--p-card); --s-soft: var(--p-soft);
+      --s-soft2: color-mix(in srgb, var(--p-soft) 86%, var(--p-accent));
+      --s-border: var(--p-border);
+      --s-accent: var(--p-accent); --s-accent-hover: color-mix(in srgb, var(--p-accent) 82%, #000); --s-accent-text: var(--p-accent);
+      --s-ga: var(--p-ga); --s-gb: var(--p-gb);
+      --s-ink: #243047; --s-muted: #596579; --s-input: #fff;
+      --s-shadow: color-mix(in srgb, var(--p-accent) 22%, transparent);
+      --s-card-shadow: 0 10px 28px rgba(35,48,71,.075), 0 2px 7px rgba(35,48,71,.045);
+    }
+    /* Токени режиму: темна тема */
+    html.dark[data-season] {
+      color-scheme: dark;
+      --s-page: color-mix(in srgb, var(--p-accent) 10%, #0d131d);
+      --s-card: color-mix(in srgb, var(--p-accent) 9%, #161e2c);
+      --s-soft: color-mix(in srgb, var(--p-accent) 13%, #1c2636);
+      --s-soft2: color-mix(in srgb, var(--p-accent) 20%, #243044);
+      --s-border: color-mix(in srgb, var(--p-accent) 26%, #2a3548);
+      --s-accent: var(--p-accent); --s-accent-hover: color-mix(in srgb, var(--p-accent) 85%, #fff); --s-accent-text: color-mix(in srgb, var(--p-accent) 52%, #fff);
+      --s-ga: var(--p-ga); --s-gb: color-mix(in srgb, var(--p-gb) 70%, #000);
+      --s-ink: #e8ecf4; --s-muted: #a4afc3; --s-input: color-mix(in srgb, var(--p-accent) 7%, #0f1623);
+      --s-shadow: rgba(0,0,0,.4);
+      --s-card-shadow: 0 10px 28px rgba(0,0,0,.35), 0 2px 7px rgba(0,0,0,.25);
+    }
+
+    /* 3. Застосування токенів до утиліт Tailwind (однаково для обох режимів) */
+    html[data-season] body[class] {
+      background-color: var(--s-page) !important; color: var(--s-ink);
+      background-image: radial-gradient(ellipse at 8% 4%, color-mix(in srgb, var(--p-ga) 14%, transparent), transparent 34rem),
+                        radial-gradient(ellipse at 96% 18%, color-mix(in srgb, var(--p-gb) 14%, transparent), transparent 32rem);
+      background-attachment: fixed;
+    }
+    html[data-season] :is(.bg-white, [class~="dark:bg-slate-800/80"], [class~="dark:bg-slate-800"]) { background-color: var(--s-card) !important; }
+    html[data-season] :is(.bg-white, [class~="dark:bg-slate-800/80"], [class~="dark:bg-slate-800"])[class~="rounded-2xl"] {
+      box-shadow: var(--s-card-shadow); border-top: 3px solid color-mix(in srgb, var(--p-gb) 85%, transparent) !important;
+    }
+    html[data-season] :is(.bg-slate-50, [class~="dark:bg-slate-900/40"], [class~="dark:bg-slate-900/50"]):not(body):not(input):not(select):not(textarea) { background-color: var(--s-soft) !important; }
+    html[data-season] :is(.bg-slate-100, .bg-slate-200, [class~="dark:bg-slate-700"], [class~="dark:bg-slate-700/60"]) { background-color: var(--s-soft2) !important; }
+    html[data-season] :is(.border-slate-200, [class~="dark:border-slate-700/60"], [class~="dark:border-slate-700"], [class~="border-slate-700"], .border:not([class*="border-"])) { border-color: var(--s-border) !important; }
+    html[data-season] :is(.border-slate-100, [class~="dark:border-slate-800/60"]) { border-color: color-mix(in srgb, var(--s-border) 55%, transparent) !important; }
+
+    html[data-season] :is(.text-slate-400, .text-slate-500) { color: var(--s-muted); }
+    html.dark[data-season] :is(.text-slate-600, .text-slate-700, .text-slate-800, .text-slate-900) { color: var(--s-ink); }
+    html[data-season] th { color: var(--s-ink); font-weight: 700; }
+
+    /* Акцент (замість рожевого) */
+    html[data-season] .bg-pink-500 { background-color: var(--s-accent) !important; }
+    html[data-season] [class~="hover:bg-pink-600"]:hover { background-color: var(--s-accent-hover) !important; }
+    html[data-season] :is(.text-pink-500, .text-pink-600) { color: var(--s-accent-text) !important; }
+    html[data-season] :is(.bg-pink-50, .bg-pink-100, [class~="dark:bg-pink-950/40"], [class~="dark:bg-pink-950/20"], [class*="bg-pink-50/"]) { background-color: var(--s-soft) !important; color: var(--s-accent-text) !important; }
+    html[data-season] :is(.border-pink-200, .border-pink-300) { border-color: var(--s-border) !important; }
+    html[data-season] [class*="shadow-pink-"] { --tw-shadow-color: var(--s-shadow) !important; }
+    html[data-season] [class*="ring-pink-"] { --tw-ring-color: var(--s-accent) !important; }
+    html[data-season] [class*="from-pink-"] { --tw-gradient-from: var(--s-ga) !important; --tw-gradient-to: var(--s-gb) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+
+    /* Шапка, вкладки, поля */
+    html[data-season] header[class] { background-color: color-mix(in srgb, var(--s-card) 90%, transparent) !important; border-bottom-color: var(--s-border) !important; backdrop-filter: blur(16px); }
+    html[data-season] .tab-btn { border-radius: 999px !important; transition: background .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease; }
+    html[data-season] .tab-btn:hover { transform: translateY(-1px); }
+    html[data-season] .tab-btn.bg-pink-500 {
+      background: linear-gradient(135deg, var(--s-ga), color-mix(in srgb, var(--s-ga) 55%, var(--s-gb))) !important;
+      color: #fff !important; box-shadow: 0 7px 18px var(--s-shadow) !important;
+    }
+    html[data-season] :is(input, select, textarea)[class] { background-color: var(--s-input) !important; color: var(--s-ink) !important; border-color: var(--s-border) !important; border-radius: 11px; }
+    html[data-season] input::placeholder, html[data-season] textarea::placeholder { color: var(--s-muted); opacity: .8; }
+    html[data-season] :is(input, select, textarea):focus { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--s-accent) 22%, transparent) !important; }
+    html[data-season] .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--s-accent); }
+    html[data-season] ::selection { color: #fff; background: var(--s-accent); }
+
+    /* Темна тема: напівпрозорі бейджі та кольорові суми */
+    html.dark[data-season] .bg-emerald-100 { background-color: color-mix(in srgb, #10b981 22%, transparent) !important; color: #6ee7b7 !important; }
+    html.dark[data-season] .bg-rose-100    { background-color: color-mix(in srgb, #f43f5e 22%, transparent) !important; color: #fda4af !important; }
+    html.dark[data-season] .bg-amber-100   { background-color: color-mix(in srgb, #f59e0b 22%, transparent) !important; color: #fcd34d !important; }
+    html.dark[data-season] .bg-blue-100    { background-color: color-mix(in srgb, #3b82f6 22%, transparent) !important; color: #93c5fd !important; }
+    html.dark[data-season] .bg-purple-100  { background-color: color-mix(in srgb, #8b5cf6 22%, transparent) !important; color: #c4b5fd !important; }
+    html.dark[data-season] .text-emerald-600 { color: #34d399; }
+    html.dark[data-season] .text-rose-600 { color: #fb7185; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html[data-season] *, html[data-season] *::before, html[data-season] *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+
+  <script id="usbudget-theme-engine-js">
+    (function () {
+      'use strict';
+      var KEY = 'usbudget_theme';
+      var THEMES = [
+        { id: 'january', name: 'Січень', emoji: '❄️', line: 'Новий рік — нові плани', a: '#356b9d', b: '#8bbbd7' },
+        { id: 'february', name: 'Лютий', emoji: '💝', line: 'Місяць закоханих', a: '#963b61', b: '#d17d98' },
+        { id: 'march', name: 'Березень', emoji: '🌱', line: 'Весна починається', a: '#52784e', b: '#c18b68' },
+        { id: 'april', name: 'Квітень', emoji: '🌷', line: 'Час цвітіння', a: '#75619e', b: '#8cb9a3' },
+        { id: 'may', name: 'Травень', emoji: '🌸', line: 'Яблуні в цвіту', a: '#357a42', b: '#e7a1b0' },
+        { id: 'june', name: 'Червень', emoji: '☀️', line: 'Сонячний червень', a: '#9c6b00', b: '#f2c94c' },
+        { id: 'july', name: 'Липень', emoji: '🌊', line: 'Теплий липень', a: '#13808b', b: '#f08a6c' },
+        { id: 'august', name: 'Серпень', emoji: '🌾', line: 'Золоте літо', a: '#1f5fa8', b: '#e5b93c' },
+        { id: 'september', name: 'Вересень', emoji: '🍎', line: 'Новий сезон', a: '#a8481f', b: '#d9a441' },
+        { id: 'october', name: 'Жовтень', emoji: '🍁', line: 'Золота осінь', a: '#6e2f4d', b: '#c9774b' },
+        { id: 'november', name: 'Листопад', emoji: '🍂', line: 'Затишний листопад', a: '#6f4931', b: '#c28a4b' },
+        { id: 'december', name: 'Грудень', emoji: '🎄', line: 'Святковий грудень', a: '#155c49', b: '#a63849' }
+      ];
+      var BY_MONTH = { 0: 'january', 1: 'february', 2: 'march', 3: 'april', 4: 'may', 5: 'june', 6: 'july', 7: 'august', 8: 'september', 9: 'october', 10: 'november', 11: 'december' };
+      var BASE = ['#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#64748b', '#f43f5e', '#06b6d4', '#84cc16'];
+      function lighten(hex, f) {
+        var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+        function c(v) { return Math.round(v + (255 - v) * f); }
+        return '#' + ((1 << 24) + (c(r) << 16) + (c(g) << 8) + c(b)).toString(16).slice(1);
+      }
+      // Кольори діаграм: перші два з теми, решта — стандартні, щоб категорії лишались різними
+      window.usbChartColors = function () {
+        var t = current();
+        if (!t) return BASE;
+        var dark = document.documentElement.classList.contains('dark');
+        return [dark ? lighten(t.a, 0.3) : t.a, dark ? lighten(t.b, 0.1) : t.b].concat(BASE.slice(2));
+      };
+
+      function pref() { try { return localStorage.getItem(KEY) || 'auto'; } catch (e) { return 'auto'; } }
+      function find(id) { for (var i = 0; i < THEMES.length; i++) { if (THEMES[i].id === id) return THEMES[i]; } return null; }
+      function byCalendar() { return find(BY_MONTH[new Date().getMonth()]); }
+      function current() { var p = pref(); if (p === 'off') return null; return p === 'auto' ? byCalendar() : find(p); }
+      function apply() {
+        var t = current();
+        if (t) document.documentElement.setAttribute('data-season', t.id);
+        else document.documentElement.removeAttribute('data-season');
+        var emoji = t ? t.emoji : '💕';
+        var logo = document.getElementById('app-logo'); if (logo) logo.textContent = emoji;
+        var sub = document.getElementById('app-subtitle'); if (sub) sub.textContent = t ? emoji + ' ' + t.line : 'Фінансовий хаб для пари';
+        var link = document.querySelector('link[rel~="icon"]');
+        if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+        link.href = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">' + emoji + '</text></svg>');
+      }
+      function buildPicker() {
+        var host = document.getElementById('theme-picker');
+        if (!host) return;
+        var p = pref(), cal = byCalendar();
+        var items = [
+          { id: 'auto', label: '🗓️ Авто за календарем', sub: cal ? 'зараз: ' + cal.name : 'цього місяця стандартна тема' },
+          { id: 'off', label: '⚪ Без сезонності', sub: 'стандартна тема' }
+        ].concat(THEMES.map(function (t) { return { id: t.id, label: t.emoji + ' ' + t.name, sub: '', sw: [t.a, t.b] }; }));
+        host.innerHTML = items.map(function (it) {
+          return '<button type="button" onclick="setThemePref(\'' + it.id + '\')" class="text-left p-3 rounded-xl border text-xs font-semibold transition bg-slate-50 dark:bg-slate-900/40 hover:opacity-90' + (it.id === p ? ' ring-2 ring-pink-500' : '') + '">'
+            + '<span class="flex items-center gap-2">' + (it.sw ? '<span class="inline-block w-3.5 h-3.5 rounded-full shrink-0" style="background:linear-gradient(135deg,' + it.sw[0] + ',' + it.sw[1] + ')"></span>' : '') + it.label + '</span>'
+            + (it.sub ? '<span class="block mt-0.5 font-normal text-slate-500">' + it.sub + '</span>' : '') + '</button>';
+        }).join('');
+      }
+      window.setThemePref = function (v) { try { localStorage.setItem(KEY, v); } catch (e) {} apply(); buildPicker(); if (typeof renderAll === 'function') renderAll(); };
+      apply();
+      window.setInterval(apply, 6 * 60 * 60 * 1000);
+      document.addEventListener('DOMContentLoaded', function () { apply(); buildPicker(); });
+    }());
+  </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- Шапка сайту -->
+  <header class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700/60 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div id="app-logo" class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-pink-500/20">
+          💕
+        </div>
+        <div>
+          <h1 class="text-lg font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+            UsBudget
+          </h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400"><span id="app-subtitle">Фінансовий хаб для пари</span> · v3.1</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center space-x-3">
+        <div id="sync-status" class="text-xs px-3 py-1.5 rounded-full font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span>Підключення...</span>
+        </div>
+        <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition" title="Змінити тему">
+          <span id="theme-icon" class="text-base">🌙</span>
+        </button>
+        <button onclick="switchTab('settings')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition" title="Налаштування">
+          <span class="text-base">⚙️</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Навігація вкладок -->
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 w-full">
+    <div class="flex space-x-2 border-b border-slate-200 dark:border-slate-700/60 pb-3 overflow-x-auto custom-scrollbar">
+      <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-pink-500 text-white shadow-md shadow-pink-500/20">
+        <span>📊</span> Дашборд
+      </button>
+      <button onclick="switchTab('incomes')" id="btn-incomes" class="tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <span>💰</span> Доходи
+      </button>
+      <button onclick="switchTab('expenses')" id="btn-expenses" class="tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <span>🛒</span> Витрати та Ліміти
+      </button>
+      <button onclick="switchTab('fixed')" id="btn-fixed" class="tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <span>🔄</span> Регулярні
+      </button>
+      <button onclick="switchTab('settlement')" id="btn-settlement" class="tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <span>⚖️</span> Взаєморозрахунки
+      </button>
+      <button onclick="switchTab('p1')" id="btn-p1" class="tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">👩 Партнер 1</button>
+      <button onclick="switchTab('p2')" id="btn-p2" class="tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">👨 Партнер 2</button>
+      <button onclick="switchTab('goals')" id="btn-goals" class="tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <span>🎯</span> Цілі
+      </button>
+      <button onclick="switchTab('settings')" id="btn-settings" class="tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <span>⚙️</span> Налаштування
+      </button>
+    </div>
+  </nav>
+
+  <!-- Основний контент -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+    <!-- Глобальний селектор періоду -->
+    <div class="bg-white dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <button onclick="setPeriodType('month')" id="period-btn-month" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition bg-pink-500 text-white shadow-sm">Календарний місяць</button>
+        <button onclick="setPeriodType('week')" id="period-btn-week" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Тиждень</button>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="shiftPeriod(-1)" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition" title="Попередній період">◀</button>
+        <span id="period-label" class="text-sm font-bold text-slate-900 dark:text-white min-w-[160px] text-center">Лютий 2026</span>
+        <button onclick="shiftPeriod(1)" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition" title="Наступний період">▶</button>
+      </div>
+    </div>
+
+    <!-- TAB 1: ДАШБОРД -->
+    <section id="tab-dashboard" class="tab-content space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+          <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 text-xs font-medium">
+            <span>Загальний дохід (період)</span>
+            <span class="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg">📈</span>
+          </div>
+          <h3 id="kpi-income" class="text-2xl font-bold mt-2 text-slate-900 dark:text-white">0 ₴</h3>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+          <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 text-xs font-medium">
+            <span>Загальні витрати (період)</span>
+            <span class="p-1.5 bg-rose-50 text-rose-600 rounded-lg">📉</span>
+          </div>
+          <h3 id="kpi-expenses" class="text-2xl font-bold mt-2 text-slate-900 dark:text-white">0 ₴</h3>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+          <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 text-xs font-medium">
+            <span>Чисті заощадження</span>
+            <span class="p-1.5 bg-blue-50 text-blue-600 rounded-lg">💎</span>
+          </div>
+          <h3 id="kpi-savings" class="text-2xl font-bold mt-2 text-emerald-600">0 ₴</h3>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+          <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 text-xs font-medium">
+            <span>Норма заощаджень</span>
+            <span class="p-1.5 bg-pink-50 text-pink-600 rounded-lg">📊</span>
+          </div>
+          <h3 id="kpi-savings-rate" class="text-2xl font-bold mt-2 text-pink-600">0%</h3>
+        </div>
+      </div>
+
+      <!-- Блок Контроль лімітів -->
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
+        <h3 class="font-bold text-base flex items-center gap-2">
+          <span>🎯</span> Контроль лімітів за категоріями (План / Факт)
+        </h3>
+        <div id="dashboard-limits-container" class="space-y-3"></div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+          <h3 class="font-bold text-base mb-4 flex items-center gap-2">
+            <span>🍰</span> Структура витрат за категоріями
+          </h3>
+          <div class="relative h-64 flex items-center justify-center">
+            <canvas id="expenseCategoryChart"></canvas>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+          <h3 class="font-bold text-base mb-4 flex items-center gap-2">
+            <span>👥</span> Частки доходів партнерів
+          </h3>
+          <div class="relative h-64 flex items-center justify-center">
+            <canvas id="partnerContributionChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: ДОХОДИ -->
+    <section id="tab-incomes" class="tab-content hidden space-y-6">
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-lg font-bold mb-4">Додати дохід</h3>
+        <form id="income-form" onsubmit="addIncome(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Дата</label>
+            <input type="date" id="income-date" required class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Отримувач</label>
+            <select id="income-partner" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Джерело</label>
+            <input type="text" id="income-source" required placeholder="Напр: Зарплата" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Сума (<span class="currency-symbol">₴</span>)</label>
+            <input type="number" id="income-amount" min="1" required placeholder="40000" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition">
+              + Додати дохід
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-lg font-bold mb-4">Список доходів</h3>
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500">
+                <th class="pb-3 font-semibold">Дата</th>
+                <th class="pb-3 font-semibold">Партнер</th>
+                <th class="pb-3 font-semibold">Джерело</th>
+                <th class="pb-3 font-semibold">Сума</th>
+                <th class="pb-3 font-semibold text-right">Дії</th>
+              </tr>
+            </thead>
+            <tbody id="incomes-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: ВИТРАТИ ТА ЛІМІТИ -->
+    <section id="tab-expenses" class="tab-content hidden space-y-6">
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-lg font-bold mb-4">Додати витрату</h3>
+        <form id="expense-form" onsubmit="addExpense(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Дата</label>
+            <input type="date" id="exp-date" required class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Назва витрати</label>
+            <input type="text" id="exp-title" required placeholder="Продукти..." class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Сума (<span class="currency-symbol">₴</span>)</label>
+            <input type="number" id="exp-amount" min="1" required placeholder="1500" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Категорія</label>
+            <select id="exp-category" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Хто сплатив</label>
+            <select id="exp-payer" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Правило розподілу</label>
+            <select id="exp-split" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
+          </div>
+          <div class="sm:col-span-2 lg:col-span-3 flex justify-end">
+            <button type="submit" class="w-full sm:w-auto bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-6 rounded-xl text-sm transition">
+              + Додати витрату
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
+        <h3 class="text-lg font-bold">⚙️ Встановлення лімітів на категорії (місяць)</h3>
+        <p class="text-xs text-slate-500">Вкажіть максимальну суму витрат для кожної категорії.</p>
+        <div id="category-limits-editor" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2"></div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-lg font-bold mb-4">Історія витрат</h3>
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500">
+                <th class="pb-3 font-semibold">Дата</th>
+                <th class="pb-3 font-semibold">Назва</th>
+                <th class="pb-3 font-semibold">Категорія</th>
+                <th class="pb-3 font-semibold">Платник</th>
+                <th class="pb-3 font-semibold">Розподіл</th>
+                <th class="pb-3 font-semibold">Сума</th>
+                <th class="pb-3 font-semibold text-right">Дії</th>
+              </tr>
+            </thead>
+            <tbody id="expenses-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB: РЕГУЛЯРНІ ПЛАТЕЖІ -->
+    <section id="tab-fixed" class="tab-content hidden space-y-6">
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"><span>🔄</span> Регулярні та фіксовані платежі</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Кредити, інвестиції, підписки, зал тощо.</p>
+        </div>
+
+        <form id="fixed-expense-form" onsubmit="addFixedExpense(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Назва</label>
+            <input type="text" id="fx-title" required placeholder="Кредит, зал..." class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Сума (<span class="currency-symbol">₴</span>)</label>
+            <input type="number" id="fx-amount" min="1" required placeholder="2500" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Частота</label>
+            <select id="fx-frequency" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+              <option value="month">Щомісяця</option><option value="week">Щотижня</option><option value="quarter">Щокварталу</option><option value="year">Щороку</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Тип</label>
+            <select id="fx-type" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+              <option value="expense">📉 Витрата</option><option value="savings">💎 Накопичення</option><option value="debt">💳 Борг / Кредит</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Категорія</label>
+            <select id="fx-category" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Хто сплачує</label>
+            <select id="fx-scope" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+              <option value="shared">👥 Спільний</option><option value="p1">👩 Партнер 1</option><option value="p2">👨 Партнер 2</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Кінцева дата (опціонально)</label>
+            <input type="date" id="fx-end-date" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition">+ Додати шаблон</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-lg font-bold mb-4">Активні регулярні платежі</h3>
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500">
+                <th class="pb-3 font-semibold">Назва</th>
+                <th class="pb-3 font-semibold">Тип</th>
+                <th class="pb-3 font-semibold">Частота</th>
+                <th class="pb-3 font-semibold">Сума</th>
+                <th class="pb-3 font-semibold">Хто</th>
+                <th class="pb-3 font-semibold text-right">Дії / Статус</th>
+              </tr>
+            </thead>
+            <tbody id="fixed-expenses-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB: ВЗАЄМОРОЗРАХУНКИ -->
+    <section id="tab-settlement" class="tab-content hidden space-y-6">
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-lg font-bold mb-2">⚖️ Взаєморозрахунки між партнерами</h3>
+        <p class="text-sm text-slate-500 mb-6">Калькулятор враховує спільні витрати за період згідно з правилами розподілу.</p>
+        <div id="settlement-box" class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <span id="settlement-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Баланс врегульовано</span>
+            <h4 id="settlement-text" class="text-xl font-bold mt-2 text-slate-900 dark:text-white">Ніхто нікому не винен</h4>
+            <p id="settlement-details" class="text-xs text-slate-500 mt-1">Усі спільні витрати розподілено рівномірно.</p>
+          </div>
+          <button onclick="confirmSettlement()" class="w-full md:w-auto bg-pink-500 hover:bg-pink-600 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition">Підтвердити розрахунок</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ОСОБИСТІ БЮДЖЕТИ ПАРТНЕРІВ (v3.1) -->
+    <section id="tab-p1" class="tab-content hidden space-y-6"></section>
+    <section id="tab-p2" class="tab-content hidden space-y-6"></section>
+
+    <!-- TAB: ЦІЛІ -->
+    <section id="tab-goals" class="tab-content hidden space-y-6">
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
+        <div>
+          <h3 class="text-lg font-bold">🎯 Створити ціль накопичення</h3>
+          <p class="text-xs text-slate-500">Встановлюйте спільні цілі або особисті накопичення з можливістю відстежувати внески кожного.</p>
+        </div>
+        <form id="goal-form" onsubmit="addGoal(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Назва цілі</label>
+            <input type="text" id="goal-title" required placeholder="Відпустка..." class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Цільова сума (<span class="currency-symbol">₴</span>)</label>
+            <input type="number" id="goal-target" min="1" required placeholder="50000" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Тип та власник цілі</label>
+            <select id="goal-scope" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+              <option value="shared">👥 Спільна ціль</option>
+              <option value="p1">👩 Особиста (Партнер 1)</option>
+              <option value="p2">👨 Особиста (Партнер 2)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Цільова дата (опціонально)</label>
+            <input type="date" id="goal-deadline" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          </div>
+          <div class="sm:col-span-2 lg:col-span-4 flex justify-end">
+            <button type="submit" class="w-full sm:w-auto bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-6 rounded-xl text-sm transition">+ Створити ціль</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="goals-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- TAB: НАЛАШТУВАННЯ -->
+    <section id="tab-settings" class="tab-content hidden space-y-6">
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">⚙️</span>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Налаштування пари та бюджету</h2>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">Керуйте іменами партнерів, валютою та категоріями</p>
+        </div>
+        <div id="couple-preview-badge" class="px-4 py-2.5 rounded-xl bg-pink-50 dark:bg-pink-950/40 text-pink-700 border border-pink-200 text-sm font-semibold flex items-center gap-3">
+          <span id="preview-p1">👩 Партнер 1</span><span class="text-rose-500">❤️</span><span id="preview-p2">👨 Партнер 2</span>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
+        <h3 class="text-lg font-bold flex items-center gap-2"><span>👥</span> Персоналізація партнерів</h3>
+        <form id="settings-partners-form" onsubmit="savePartnerSettings(event)" class="space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-5 rounded-2xl border border-pink-200 bg-pink-50/40 dark:bg-pink-950/20 space-y-4">
+              <div class="flex justify-between items-center border-b pb-3">
+                <span class="text-xs font-bold uppercase text-pink-600">Перший партнер</span>
+                <span id="p1-card-avatar" class="text-2xl">👩</span>
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1.5">Ім'я</label>
+                <input type="text" id="settings-p1-name" required class="w-full p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm font-medium">
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1.5">Аватар</label>
+                <select id="settings-p1-avatar" onchange="updateSettingsPreviews()" class="w-full p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm">
+                  <option value="👩">👩 Дівчина</option><option value="👧">👧 Дівчинка</option><option value="👱‍♀️">👱‍♀️ Світле волосся</option><option value="👩‍🦰">👩‍🦰 Руде волосся</option><option value="👩‍💻">👩‍💻 Айтівниця</option><option value="👸">👸 Принцеса</option><option value="💕">💕 Серденько</option><option value="🌸">🌸 Квітка</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1.5">Колір</label>
+                <input type="color" id="settings-p1-color" value="#ec4899" class="w-10 h-10 rounded-xl border-0 cursor-pointer bg-transparent">
+              </div>
+            </div>
+
+            <div class="p-5 rounded-2xl border border-blue-200 bg-blue-50/40 dark:bg-blue-950/20 space-y-4">
+              <div class="flex justify-between items-center border-b pb-3">
+                <span class="text-xs font-bold uppercase text-blue-600">Другий партнер</span>
+                <span id="p2-card-avatar" class="text-2xl">👨</span>
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1.5">Ім'я</label>
+                <input type="text" id="settings-p2-name" required class="w-full p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm font-medium">
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1.5">Аватар</label>
+                <select id="settings-p2-avatar" onchange="updateSettingsPreviews()" class="w-full p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm">
+                  <option value="👨">👨 Хлопець</option><option value="👦">👦 Юнак</option><option value="👱‍♂️">👱‍♂️ Світле волосся</option><option value="🧔">🧔 З бородою</option><option value="👨‍💻">👨‍💻 Айтівець</option><option value="🤴">🤴 Принц</option><option value="🚀">🚀 Ракета</option><option value="🌟">🌟 Зірка</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1.5">Колір</label>
+                <input type="color" id="settings-p2-color" value="#3b82f6" class="w-10 h-10 rounded-xl border-0 cursor-pointer bg-transparent">
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-6 rounded-xl text-sm transition">💾 Зберегти профілі</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
+        <h3 class="text-lg font-bold flex items-center gap-2"><span>💵</span> Фінансові параметри</h3>
+        <form id="settings-finance-form" onsubmit="saveFinanceSettings(event)" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-medium mb-1.5">Валюта</label>
+              <select id="settings-currency" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+                <option value="₴">₴ (UAH)</option><option value="$">$ (USD)</option><option value="€">€ (EUR)</option><option value="zł">zł (PLN)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium mb-1.5">Розподіл за замовчуванням</label>
+              <select id="settings-default-split" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+                <option value="50-50">50 / 50 (Порівну)</option><option value="proportional">Пропорційно доходу</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-6 rounded-xl text-sm transition">💾 Зберегти параметри</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-bold">🏷️ Категорії витрат</h3>
+          <button onclick="resetCategoriesToDefault()" class="text-xs text-pink-600 hover:underline">Відновити типові</button>
+        </div>
+        <form onsubmit="addCategory(event)" class="flex gap-3">
+          <input type="text" id="new-category-input" required placeholder="Нова категорія..." class="flex-1 p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          <button type="submit" class="bg-slate-800 text-white font-medium py-2.5 px-5 rounded-xl text-sm">+ Додати</button>
+        </form>
+        <div id="settings-categories-list" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
+        <div>
+          <h3 class="text-lg font-bold flex items-center gap-2"><span>🎨</span> Тема оформлення</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Вибір зберігається на цьому пристрої. Світла чи темна тема перемикається кнопкою в шапці й працює з кожною палітрою.</p>
+        </div>
+        <div id="theme-picker" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
+        <div>
+          <h3 class="text-lg font-bold flex items-center gap-2"><span>🔒</span> Приватність особистих розділів (PIN-захист)</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Встановіть PIN-код для захисту особистих вкладок від випадкового погляду.</p>
+        </div>
+        <div id="privacy-settings" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
+        <h3 class="text-lg font-bold">💾 Резервне копіювання</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button onclick="exportDataToJson()" class="p-4 rounded-xl border hover:border-pink-500 bg-slate-50 dark:bg-slate-900/50 text-left transition">
+            <div class="text-xl mb-1">📥</div><div class="font-semibold text-sm">Експорт у JSON</div>
+          </button>
+          <label class="p-4 rounded-xl border hover:border-pink-500 bg-slate-50 dark:bg-slate-900/50 text-left transition cursor-pointer">
+            <input type="file" id="import-json-file" accept=".json" onchange="importDataFromJson(event)" class="hidden">
+            <div class="text-xl mb-1">📤</div><div class="font-semibold text-sm">Імпорт з JSON</div>
+          </label>
+          <button onclick="confirmResetToDemo()" class="p-4 rounded-xl border hover:border-blue-500 bg-slate-50 dark:bg-slate-900/50 text-left transition">
+            <div class="text-xl mb-1">🔄</div><div class="font-semibold text-sm">Демо-дані</div>
+          </button>
+          <button onclick="confirmClearAllData()" class="p-4 rounded-xl border border-rose-200 hover:border-rose-500 bg-rose-50/30 text-left transition">
+            <div class="text-xl mb-1">🗑️</div><div class="font-semibold text-sm text-rose-600">Очистити все</div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Модальне вікно -->
+  <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl max-w-md w-full mx-4 transform scale-95 transition-transform duration-200" id="modal-box">
+      <h3 id="modal-title" class="text-lg font-bold text-slate-900 dark:text-white mb-2">Сповіщення</h3>
+      <p id="modal-message" class="text-sm text-slate-600 dark:text-slate-300 mb-6">Текст...</p>
+      <div id="modal-actions" class="flex justify-end gap-3">
+        <button id="modal-cancel-btn" onclick="closeModal()" class="hidden px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Скасувати</button>
+        <button id="modal-confirm-btn" onclick="closeModal()" class="bg-pink-500 hover:bg-pink-600 text-white font-medium px-4 py-2 rounded-xl text-sm transition">Зрозуміло</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript логіка -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC40zPZ1sq2jNlHmG-sBCz-WySdcCPxeAE",
+      authDomain: "ourbudget-73f05.firebaseapp.com",
+      databaseURL: "https://ourbudget-73f05-default-rtdb.firebaseio.com",
+      projectId: "ourbudget-73f05",
+      storageBucket: "ourbudget-73f05.appspot.com",
+      messagingSenderId: "630369961011",
+      appId: "1:630369961011:web:0c5cfa53ed68a77a399246"
+    };
+
+    let db = null;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+    } catch (e) {
+      console.error("Помилка ініціалізації Firebase:", e);
+    }
+
+    const defaultSettings = {
+      partner1: 'Партнер 1',
+      partner2: 'Партнер 2',
+      partner1Avatar: '👩',
+      partner2Avatar: '👨',
+      partner1Color: '#ec4899',
+      partner2Color: '#3b82f6',
+      currency: '₴',
+      categories: ['Оренда', 'Комунальні', 'Продукти', 'Ресторани', 'Розваги', 'Транспорт', 'Здоровʼя', 'Інше'],
+      defaultSplit: '50-50',
+      categoryLimits: {}
+    };
+
+    let state = {
+      settings: Object.assign({}, defaultSettings),
+      incomes: [
+        { id: '1', date: '2026-02-01', partner: 'Партнер 1', source: 'Основний дохід', amount: 35000 },
+        { id: '2', date: '2026-02-01', partner: 'Партнер 2', source: 'Основний дохід', amount: 28000 }
+      ],
+      expenses: [
+        { id: '1', date: '2026-02-05', title: 'Оренда квартири', category: 'Оренда', payer: 'Партнер 1', amount: 14000, split: 'proportional' },
+        { id: '2', date: '2026-02-08', title: 'Продукти', category: 'Продукти', payer: 'Партнер 2', amount: 3200, split: '50-50' }
+      ],
+      fixedExpenses: [],
+      goals: [
+        { id: '1', title: 'Спільна відпустка', target: 60000, current: 25000, scope: 'shared', deadline: '2027-08-31', history: [{date: '2026-02-01', partner: 'Партнер 1', amount: 15000}, {date: '2026-02-10', partner: 'Партнер 2', amount: 10000}] }
+      ],
+      personalIncomes: [],
+      personalExpenses: [],
+      personalModes: { p1: 'integrated', p2: 'integrated' },
+      personalGoals: { p1: [], p2: [] },
+      personalFixed: { p1: [], p2: [] },
+      personalCategories: { 
+        p1: ['Хобі', 'Косметика/Догляд', 'Книги', 'Одежа'], 
+        p2: ['Ґаджети', 'Авто/Спорт', 'Ігри/Підписки', 'Одежа'] 
+      },
+      personalCategoryLimits: { p1: {}, p2: {} }
+    };
+
+    let currentPeriod = { type: 'month', offset: 0 };
+    let expenseCategoryChartInstance = null;
+    let partnerContributionChartInstance = null;
+    const personalCharts = {};
+
+    function getTodayString() { return toLocalISO(new Date()); }
+
+    function getPeriodRange() {
+      const now = new Date();
+      let start, end, label, periodKey;
+
+      if (currentPeriod.type === 'month') {
+        const y = now.getFullYear();
+        const m = now.getMonth() + currentPeriod.offset;
+        start = new Date(y, m, 1);
+        end = new Date(y, m + 1, 0, 23, 59, 59);
+        periodKey = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}`;
+        label = start.toLocaleDateString('uk-UA', { month: 'long', year: 'numeric' });
+        label = label.charAt(0).toUpperCase() + label.slice(1);
+      } else {
+        const day = now.getDay();
+        const diffToMon = now.getDate() - day + (day === 0 ? -6 : 1) + (currentPeriod.offset * 7);
+        start = new Date(now.setDate(diffToMon));
+        start.setHours(0, 0, 0, 0);
+        end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        end.setHours(23, 59, 59, 999);
+        periodKey = toLocalISO(start);
+        const opts = { day: 'numeric', month: 'short' };
+        label = `${start.toLocaleDateString('uk-UA', opts)} — ${end.toLocaleDateString('uk-UA', { ...opts, year: 'numeric' })}`;
+      }
+      return { start, end, label, periodKey };
+    }
+
+    function setPeriodType(type) {
+      currentPeriod.type = type;
+      currentPeriod.offset = 0;
+      updatePeriodUI();
+      renderAll();
+    }
+
+    function shiftPeriod(dir) {
+      currentPeriod.offset += dir;
+      updatePeriodUI();
+      renderAll();
+    }
+
+    function updatePeriodUI() {
+      const btnM = document.getElementById('period-btn-month');
+      const btnW = document.getElementById('period-btn-week');
+      const lbl = document.getElementById('period-label');
+
+      if (currentPeriod.type === 'month') {
+        btnM.className = 'flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition bg-pink-500 text-white shadow-sm';
+        btnW.className = 'flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
+      } else {
+        btnW.className = 'flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition bg-pink-500 text-white shadow-sm';
+        btnM.className = 'flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
+      }
+      const { label } = getPeriodRange();
+      if (lbl) lbl.innerText = label;
+    }
+
+    function filterByPeriod(items) {
+      const { start, end } = getPeriodRange();
+      return (items || []).filter(item => {
+        if (!item.date) return true;
+        const d = parseLocalDate(item.date);
+        return d >= start && d <= end;
+      });
+    }
+
+    function getPartner1Name() { return (state.settings && state.settings.partner1 && state.settings.partner1.trim()) || 'Партнер 1'; }
+    function getPartner2Name() { return (state.settings && state.settings.partner2 && state.settings.partner2.trim()) || 'Партнер 2'; }
+    function getPartner1Avatar() { return (state.settings && state.settings.partner1Avatar) || '👩'; }
+    function getPartner2Avatar() { return (state.settings && state.settings.partner2Avatar) || '👨'; }
+    function getPartner1Color() { return (state.settings && state.settings.partner1Color) || '#ec4899'; }
+    function getPartner2Color() { return (state.settings && state.settings.partner2Color) || '#3b82f6'; }
+    function getCurrency() { return (state.settings && state.settings.currency) || '₴'; }
+    function getCategories() {
+      return (state.settings && Array.isArray(state.settings.categories) && state.settings.categories.length)
+        ? state.settings.categories
+        : defaultSettings.categories;
+    }
+
+    function loadLocalCache() {
+      try {
+        const cached = localStorage.getItem('usbudget_state');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && typeof parsed === 'object') {
+            state.settings = Object.assign({}, defaultSettings, parsed.settings || {});
+            if (Array.isArray(parsed.incomes)) state.incomes = parsed.incomes;
+            if (Array.isArray(parsed.expenses)) state.expenses = parsed.expenses;
+            if (Array.isArray(parsed.fixedExpenses)) state.fixedExpenses = parsed.fixedExpenses;
+            if (Array.isArray(parsed.goals)) state.goals = parsed.goals;
+            if (Array.isArray(parsed.personalIncomes)) state.personalIncomes = parsed.personalIncomes;
+            if (Array.isArray(parsed.personalExpenses)) state.personalExpenses = parsed.personalExpenses;
+            if (parsed.personalModes) state.personalModes = parsed.personalModes;
+            if (parsed.personalGoals) state.personalGoals = parsed.personalGoals;
+            if (parsed.personalFixed) state.personalFixed = parsed.personalFixed;
+            if (parsed.personalCategories) state.personalCategories = parsed.personalCategories;
+            if (parsed.personalCategoryLimits) state.personalCategoryLimits = parsed.personalCategoryLimits;
+          }
+        }
+      } catch (e) { console.error("Помилка читання localStorage:", e); }
+    }
+
+    function initSync() {
+      loadLocalCache();
+      updatePeriodUI();
+      renderAll();
+
+      if (!db) { updateSyncBadge(true); return; }
+      db.ref('shared_budget_data').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+          state = {
+            settings: Object.assign({}, defaultSettings, val.settings || {}),
+            incomes: val.incomes || [],
+            expenses: val.expenses || [],
+            fixedExpenses: val.fixedExpenses || [],
+            goals: val.goals || [],
+            personalIncomes: val.personalIncomes || [],
+            personalExpenses: val.personalExpenses || [],
+            personalModes: val.personalModes || { p1: 'integrated', p2: 'integrated' },
+            personalGoals: val.personalGoals || { p1: [], p2: [] },
+            personalFixed: val.personalFixed || { p1: [], p2: [] },
+            personalCategories: val.personalCategories || { p1: ['Хобі', 'Косметика/Догляд'], p2: ['Ґаджети', 'Авто/Спорт'] },
+            personalCategoryLimits: val.personalCategoryLimits || { p1: {}, p2: {} }
+          };
+          if (normalizeDates()) saveToCloud();
+          try { localStorage.setItem('usbudget_state', JSON.stringify(state)); } catch (e) {}
+          updatePeriodUI();
+          renderAll();
+          updateSyncBadge(true);
+        } else { saveToCloud(); }
+      }, (error) => { updateSyncBadge(false); });
+    }
+
+    function saveToCloud() {
+      try { localStorage.setItem('usbudget_state', JSON.stringify(state)); } catch (e) {}
+      if (!db) return;
+      db.ref('shared_budget_data').set(state).catch(err => console.error("Firebase err:", err));
+    }
+
+    function updateSyncBadge(isOk) {
+      const el = document.getElementById('sync-status');
+      if (!el) return;
+      if (isOk) {
+        el.className = 'text-xs px-3 py-1.5 rounded-full font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 flex items-center gap-1.5';
+        el.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Синхронізовано';
+      } else {
+        el.className = 'text-xs px-3 py-1.5 rounded-full font-medium bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 flex items-center gap-1.5';
+        el.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> Помилка мережі';
+      }
+    }
+
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        document.getElementById('theme-icon').innerText = '🌙';
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        document.getElementById('theme-icon').innerText = '☀️';
+        localStorage.setItem('theme', 'dark');
+      }
+      renderCharts();
+      renderPersonalTabs();
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.getElementById('theme-icon').innerText = '☀️';
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(el => {
+        el.className = 'tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800';
+      });
+      const targetTab = document.getElementById('tab-' + tabId);
+      if (targetTab) targetTab.classList.remove('hidden');
+      const activeBtn = document.getElementById('btn-' + tabId);
+      if (activeBtn) {
+        activeBtn.className = 'tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-pink-500 text-white shadow-md shadow-pink-500/20';
+      }
+      if (tabId === 'p1' || tabId === 'p2') {
+        renderPersonalTabs();
+        if (isLocked(tabId)) setTimeout(() => { const i = document.getElementById(`pp-${tabId}-pin`); if (i) i.focus(); }, 50);
+      }
+      if (tabId === 'settings') populateSettingsForm();
+      if (tabId === 'fixed') renderFixedExpenses();
+      if (tabId === 'expenses') renderCategoryLimitsEditor();
+    }
+
+    function openModalBackdrop() {
+      const backdrop = document.getElementById('modal-backdrop');
+      const box = document.getElementById('modal-box');
+      if (!backdrop || !box) return;
+      backdrop.classList.remove('hidden');
+      setTimeout(() => { backdrop.classList.remove('opacity-0'); box.classList.remove('scale-95'); }, 10);
+    }
+    function showModal(title, msg) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = msg;
+      document.getElementById('modal-cancel-btn').classList.add('hidden');
+      const btn = document.getElementById('modal-confirm-btn');
+      btn.innerText = 'Зрозуміло';
+      btn.className = 'bg-pink-500 hover:bg-pink-600 text-white font-medium px-4 py-2 rounded-xl text-sm transition';
+      btn.onclick = closeModal;
+      openModalBackdrop();
+    }
+    function showConfirmModal(title, msg, onConfirm, confirmText = 'Підтвердити', isDanger = false) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = msg;
+      const cancelBtn = document.getElementById('modal-cancel-btn');
+      cancelBtn.classList.remove('hidden');
+      cancelBtn.onclick = closeModal;
+      const btn = document.getElementById('modal-confirm-btn');
+      btn.innerText = confirmText;
+      btn.className = isDanger ? 'bg-rose-500 hover:bg-rose-600 text-white font-medium px-4 py-2 rounded-xl text-sm transition' : 'bg-pink-500 hover:bg-pink-600 text-white font-medium px-4 py-2 rounded-xl text-sm transition';
+      btn.onclick = () => { closeModal(); if (typeof onConfirm === 'function') onConfirm(); };
+      openModalBackdrop();
+    }
+    function closeModal() {
+      const backdrop = document.getElementById('modal-backdrop');
+      const box = document.getElementById('modal-box');
+      if (!backdrop || !box) return;
+      backdrop.classList.add('opacity-0');
+      box.classList.add('scale-95');
+      setTimeout(() => { backdrop.classList.add('hidden'); }, 200);
+    }
+
+    function updateCategoryLimit(cat, val) {
+      if (!state.settings.categoryLimits) state.settings.categoryLimits = {};
+      const num = parseFloat(val);
+      if (isNaN(num) || num <= 0) delete state.settings.categoryLimits[cat];
+      else state.settings.categoryLimits[cat] = num;
+      saveToCloud(); renderCategoryLimitsEditor(); renderDashboardLimits();
+    }
+
+    function renderCategoryLimitsEditor() {
+      const container = document.getElementById('category-limits-editor');
+      if (!container) return;
+      const cats = getCategories(), limits = state.settings.categoryLimits || {}, curr = getCurrency();
+      container.innerHTML = cats.map(cat => `
+        <div class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/50 space-y-1.5">
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">${esc(cat)}</label>
+          <div class="flex items-center gap-2">
+            <input type="number" min="0" value="${limits[cat] || ''}" placeholder="Без ліміту" 
+              onchange="updateCategoryLimit('${esc(cat)}', this.value)" 
+              class="w-full p-2 rounded-lg border bg-white dark:bg-slate-900 text-xs">
+            <span class="text-xs text-slate-500">${curr}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderDashboardLimits() {
+      const container = document.getElementById('dashboard-limits-container');
+      if (!container) return;
+      const cats = getCategories(), limits = state.settings.categoryLimits || {}, periodExpenses = filterByPeriod(state.expenses), curr = getCurrency();
+      const spentMap = {};
+      periodExpenses.forEach(e => { spentMap[e.category] = (spentMap[e.category] || 0) + e.amount; });
+      const activeCats = cats.filter(c => limits[c] && limits[c] > 0);
+
+      if (!activeCats.length) {
+        container.innerHTML = `<p class="text-xs text-slate-400 py-2">Ліміти на категорії ще не встановлено.</p>`;
+        return;
+      }
+
+      container.innerHTML = activeCats.map(cat => {
+        const limit = Math.round(limits[cat] * (currentPeriod.type === 'week' ? 12 / 52 : 1)), spent = spentMap[cat] || 0, pct = Math.min(100, Math.round((spent / limit) * 100));
+        let barColor = 'bg-emerald-500', badgeBg = 'bg-emerald-100 text-emerald-800', statusText = 'У нормі';
+        if (spent > limit) { barColor = 'bg-rose-500'; badgeBg = 'bg-rose-100 text-rose-800'; statusText = 'Перевищено!'; }
+        else if (pct >= 80) { barColor = 'bg-amber-500'; badgeBg = 'bg-amber-100 text-amber-800'; statusText = 'Близько до ліміту'; }
+        return `
+          <div class="space-y-1.5 p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold">${esc(cat)}</span>
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500">${spent.toLocaleString()} / ${limit.toLocaleString()} ${curr} (${pct}%)</span>
+                <span class="px-2 py-0.5 rounded-md font-semibold ${badgeBg}">${statusText}</span>
+              </div>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+              <div class="${barColor} h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addFixedExpense(e) {
+      e.preventDefault();
+      const p1 = getPartner1Name(), p2 = getPartner2Name();
+      const fx = {
+        id: 'fx_' + Date.now(),
+        title: document.getElementById('fx-title').value.trim(),
+        amount: parseFloat(document.getElementById('fx-amount').value) || 0,
+        frequency: document.getElementById('fx-frequency').value,
+        type: document.getElementById('fx-type').value,
+        category: document.getElementById('fx-category').value,
+        scope: document.getElementById('fx-scope').value,
+        payer: (document.getElementById('fx-payer') && document.getElementById('fx-scope').value === 'shared') ? document.getElementById('fx-payer').value : (document.getElementById('fx-scope').value === 'p2' ? p2 : p1),
+        split: state.settings.defaultSplit || '50-50',
+        endDate: document.getElementById('fx-end-date').value || '',
+        paidPeriods: []
+      };
+      state.fixedExpenses = state.fixedExpenses || [];
+      state.fixedExpenses.push(fx);
+      saveToCloud(); renderAll(); renderFixedExpenses();
+      document.getElementById('fixed-expense-form').reset();
+    }
+
+    function deleteFixedExpense(id) {
+      state.fixedExpenses = (state.fixedExpenses || []).filter(x => x.id !== id);
+      saveToCloud(); renderAll(); renderFixedExpenses();
+    }
+
+    function markFixedPaid(id) {
+      const { periodKey } = getPeriodRange(), fx = (state.fixedExpenses || []).find(x => x.id === id);
+      if (!fx) return;
+      if (!fx.paidPeriods) fx.paidPeriods = [];
+      if (fx.paidPeriods.includes(periodKey)) {
+        showConfirmModal('Скасувати оплату?', `Платіж «${fx.title}» за цей період буде прибрано з витрат.`, () => {
+          fx.paidPeriods = fx.paidPeriods.filter(p => p !== periodKey);
+          const eid = (fx.scope === 'shared' ? 'exp_fx_' : 'pexp_fx_') + id + '_' + periodKey;
+          state.expenses = state.expenses.filter(e => e.id !== eid);
+          state.personalExpenses = (state.personalExpenses || []).filter(e => e.id !== eid);
+          saveToCloud(); renderAll(); renderFixedExpenses();
+        }, 'Скасувати оплату', true);
+        return;
+      }
+      fx.paidPeriods.push(periodKey);
+      const today = dateInPeriod();
+      if (fx.scope === 'shared') {
+        state.expenses.push({ id: 'exp_fx_' + id + '_' + periodKey, date: today, title: fx.title + ' (регулярний)', amount: fx.amount, category: fx.category, payer: fx.payer, split: fx.split, kind: fx.type });
+      } else {
+        state.personalExpenses = state.personalExpenses || [];
+        state.personalExpenses.push({ id: 'pexp_fx_' + id + '_' + periodKey, owner: fx.scope, date: today, title: fx.title + ' (регулярний)', amount: fx.amount, category: fx.category });
+      }
+      saveToCloud(); renderAll(); renderFixedExpenses();
+      showModal('Успіх', `Платіж «${fx.title}» проведено!`);
+    }
+
+    function renderFixedExpenses() {
+      const tbody = document.getElementById('fixed-expenses-table-body');
+      if (!tbody) return;
+      const curr = getCurrency(), { periodKey } = getPeriodRange(), p1 = getPartner1Name(), p2 = getPartner2Name();
+      tbody.innerHTML = (state.fixedExpenses || []).length ? state.fixedExpenses.map(fx => {
+        const isPaid = (fx.paidPeriods || []).includes(periodKey);
+        const typeLabels = { expense: '📉 Витрата', savings: '💎 Накопичення', debt: '💳 Борг' };
+        const scopeText = fx.scope === 'shared' ? '👥 Спільний' : (fx.scope === 'p1' ? `👩 ${p1}` : `👨 ${p2}`);
+        return `
+          <tr class="border-b border-slate-100 dark:border-slate-800/60">
+            <td class="py-3 font-medium">${esc(fx.title)}${fx.endDate ? `<span class="block text-[10px] font-normal text-slate-400">до ${fx.endDate}</span>` : ''}</td>
+            <td class="py-3 text-xs"><span class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-700">${typeLabels[fx.type] || fx.type}</span></td>
+            <td class="py-3 text-xs text-slate-500">${FREQ[fx.frequency] || fx.frequency}</td>
+            <td class="py-3 font-semibold">${fx.amount.toLocaleString()} ${curr}<span class="block text-[10px] font-normal text-slate-400">≈ ${Math.round(fx.amount * ({ week: 52 / 12, month: 1, quarter: 1 / 3, year: 1 / 12 }[fx.frequency] || 1)).toLocaleString()} ${curr}/міс</span></td>
+            <td class="py-3 text-xs">${scopeText}</td>
+            <td class="py-3 text-right flex items-center justify-end gap-2">
+              <button onclick="markFixedPaid('${fx.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition ${isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-pink-500 text-white'}">${isPaid ? '✅ Сплачено' : '💳 Сплатити'}</button>
+              <button onclick="deleteFixedExpense('${fx.id}')" class="text-rose-500 text-xs p-1">✕</button>
+            </td>
+          </tr>
+        `;
+      }).join('') : `<tr><td colspan="6" class="py-4 text-center text-slate-400 text-xs">Немає регулярних платежів</td></tr>`;
+    }
+
+    function addGoal(e) {
+      e.preventDefault();
+      const scope = document.getElementById('goal-scope').value;
+      state.goals.push({
+        id: 'goal_' + Date.now(),
+        title: document.getElementById('goal-title').value.trim(),
+        target: parseFloat(document.getElementById('goal-target').value) || 0,
+        current: 0,
+        scope: scope,
+        deadline: document.getElementById('goal-deadline').value || '',
+        history: []
+      });
+      saveToCloud(); renderGoals();
+      document.getElementById('goal-form').reset();
+    }
+
+    function contributeGoalPrompt(id) {
+      const g = state.goals.find(x => x.id === id);
+      if (!g) return;
+      const p1 = getPartner1Name(), p2 = getPartner2Name();
+      showConfirmModal('Внесок до цілі', `Хто робить внесок до «${g.title}»?`, () => {
+        const amtStr = prompt('Введіть суму внеску:', '1000');
+        const amt = parseFloat(amtStr);
+        if (!amt || amt <= 0) return;
+
+        const partnerName = confirm(`Натисніть OK для внеску від ${p1}, або Скасувати для ${p2}`) ? p1 : p2;
+
+        g.current = Math.min(g.target, g.current + amt);
+        if (!g.history) g.history = [];
+        g.history.push({ date: getTodayString(), partner: partnerName, amount: amt });
+
+        saveToCloud(); renderGoals(); renderAll();
+      }, 'Обрати суму та внести');
+    }
+
+    function deleteGoal(id) {
+      state.goals = state.goals.filter(g => g.id !== id);
+      saveToCloud(); renderGoals(); renderAll();
+    }
+
+    function renderGoals() {
+      const container = document.getElementById('goals-container');
+      if (!container) return;
+      const curr = getCurrency();
+      const p1 = getPartner1Name(), p2 = getPartner2Name();
+
+      container.innerHTML = state.goals.length ? state.goals.map(g => {
+        const percent = g.target > 0 ? Math.min(100, Math.round((g.current / g.target) * 100)) : 0;
+        let scopeBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-purple-100 text-purple-800">👥 Спільна</span>';
+        if (g.scope === 'p1') scopeBadge = `<span class="px-2 py-0.5 rounded text-[10px] bg-pink-100 text-pink-800">👩 ${p1}</span>`;
+        if (g.scope === 'p2') scopeBadge = `<span class="px-2 py-0.5 rounded text-[10px] bg-blue-100 text-blue-800">👨 ${p2}</span>`;
+
+        const historyHtml = (g.history || []).length ? `
+          <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60 text-xs space-y-1">
+            <span class="font-semibold text-slate-500">Останні внески:</span>
+            ${g.history.slice(-3).reverse().map(h => `<div class="flex justify-between text-slate-600 dark:text-slate-400"><span>${h.partner} (${h.date}):</span><span class="font-medium text-emerald-600">+${h.amount.toLocaleString()} ${curr}</span></div>`).join('')}
+          </div>
+        ` : '';
+
+        return `
+          <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border shadow-xs space-y-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <h4 class="font-bold text-base">${esc(g.title)}</h4>
+                  ${scopeBadge}
+                </div>
+                <p class="text-xs text-slate-500">Зібрано ${g.current.toLocaleString()} з ${g.target.toLocaleString()} ${curr} ${g.deadline ? `· До: ${g.deadline}` : ''}</p>
+              </div>
+              <button onclick="deleteGoal('${g.id}')" class="text-slate-400 hover:text-rose-500 text-xs p-1">✕</button>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-700 h-3 rounded-full overflow-hidden">
+              <div class="bg-pink-500 h-full rounded-full transition-all duration-500" style="width: ${percent}%"></div>
+            </div>
+            <div class="flex items-center justify-between text-xs font-semibold">
+              <span class="text-pink-600">Прогрес: ${percent}%</span>
+              <div class="flex items-center gap-1.5">
+                <input type="number" min="1" id="gc-amt-${g.id}" placeholder="Сума" class="w-20 p-1.5 rounded-lg border bg-white dark:bg-slate-900 text-xs font-normal">
+                <button onclick="contributeGoal('${g.id}', 'p1')" class="bg-pink-500 hover:bg-pink-600 text-white px-2.5 py-1.5 rounded-xl transition shadow-sm">${getPartner1Avatar()} ${esc(p1)}</button>
+                <button onclick="contributeGoal('${g.id}', 'p2')" class="bg-pink-500 hover:bg-pink-600 text-white px-2.5 py-1.5 rounded-xl transition shadow-sm">${getPartner2Avatar()} ${esc(p2)}</button>
+              </div>
+            </div>
+            ${historyHtml}
+          </div>
+        `;
+      }).join('') : `<div class="col-span-full text-center text-slate-400 text-sm py-6">Цілі відсутні</div>`;
+    }
+
+    function togglePersonalMode(k) {
+      state.personalModes = state.personalModes || { p1: 'integrated', p2: 'integrated' };
+      state.personalModes[k] = state.personalModes[k] === 'autonomous' ? 'integrated' : 'autonomous';
+      saveToCloud();
+      renderPersonalTabs();
+    }
+
+    function addPersonalCategory(k, e) {
+      e.preventDefault();
+      const input = document.getElementById(`pp-${k}-new-cat`);
+      const val = input.value.trim();
+      if (!val) return;
+      if (!state.personalCategories) state.personalCategories = { p1: [], p2: [] };
+      if (!state.personalCategories[k]) state.personalCategories[k] = [];
+      if (state.personalCategories[k].includes(val)) { showModal('Увага', 'Категорія вже існує!'); return; }
+      state.personalCategories[k].push(val);
+      saveToCloud(); input.value = '';
+      renderPersonalTabs();
+    }
+
+    function deletePersonalCategory(k, catName) {
+      if (!state.personalCategories || !state.personalCategories[k]) return;
+      state.personalCategories[k] = state.personalCategories[k].filter(c => c !== catName);
+      saveToCloud(); renderPersonalTabs();
+    }
+
+    function updatePersonalCategoryLimit(k, cat, val) {
+      if (!state.personalCategoryLimits) state.personalCategoryLimits = { p1: {}, p2: {} };
+      if (!state.personalCategoryLimits[k]) state.personalCategoryLimits[k] = {};
+      const num = parseFloat(val);
+      if (isNaN(num) || num <= 0) delete state.personalCategoryLimits[k][cat];
+      else state.personalCategoryLimits[k][cat] = num;
+      saveToCloud(); renderPersonalTabs();
+    }
+
+    function addPersonalGoal(k, e) {
+      e.preventDefault();
+      const title = document.getElementById(`pp-${k}-goal-title`).value.trim();
+      const target = parseFloat(document.getElementById(`pp-${k}-goal-target`).value) || 0;
+      if (!state.personalGoals) state.personalGoals = { p1: [], p2: [] };
+      if (!state.personalGoals[k]) state.personalGoals[k] = [];
+      state.personalGoals[k].push({ id: 'pgoal_' + Date.now(), title, target, current: 0 });
+      saveToCloud(); renderPersonalTabs();
+      e.target.reset();
+    }
+
+    function depositToPersonalGoal(k, goalId, amount) {
+      const g = ((state.personalGoals || {})[k] || []).find(x => x.id === goalId);
+      if (!g) return;
+      const add = Math.min(amount, Math.max(0, g.target - g.current));
+      if (add <= 0) { showModal('Увага', 'Ціль уже досягнута.'); return; }
+      g.current += add;
+      (state.personalExpenses = state.personalExpenses || []).push({ id: 'pexp_goal_' + Date.now(), owner: k, date: getTodayString(), title: 'Внесок до цілі: ' + g.title, amount: add, category: 'Скарбничка', kind: 'savings' });
+      saveToCloud(); renderAll();
+    }
+
+    function deletePersonalGoal(k, goalId) {
+      if (!state.personalGoals || !state.personalGoals[k]) return;
+      state.personalGoals[k] = state.personalGoals[k].filter(x => x.id !== goalId);
+      saveToCloud(); renderPersonalTabs();
+    }
+
+    function transferFreeBalanceToGoal(k, goalId) {
+      const d = personalOf(k);
+      if (d.left <= 0) { showModal('Увага', 'Залишок не є позитивним для переказу!'); return; }
+      const amt = Math.round(d.left);
+      depositToPersonalGoal(k, goalId, amt);
+      showModal('Успіх', 'Залишок внесено до цілі та списано з вільного балансу.');
+    }
+
+    function addPersonalFixed(k, e) {
+      e.preventDefault();
+      const title = document.getElementById(`pp-${k}-fx-title`).value.trim();
+      const amount = parseFloat(document.getElementById(`pp-${k}-fx-amount`).value) || 0;
+      if (!state.personalFixed) state.personalFixed = { p1: [], p2: [] };
+      if (!state.personalFixed[k]) state.personalFixed[k] = [];
+      state.personalFixed[k].push({ id: 'pfx_' + Date.now(), title, amount, paidPeriods: [] });
+      saveToCloud(); renderPersonalTabs();
+      e.target.reset();
+    }
+
+    function markPersonalFixedPaid(k, fxId) {
+      const { periodKey } = getPeriodRange();
+      const list = state.personalFixed[k] || [];
+      const fx = list.find(x => x.id === fxId);
+      if (!fx) return;
+      if (!fx.paidPeriods) fx.paidPeriods = [];
+      if (fx.paidPeriods.includes(periodKey)) {
+        showConfirmModal('Скасувати оплату?', `Платіж «${fx.title}» за цей період буде прибрано з витрат.`, () => {
+          fx.paidPeriods = fx.paidPeriods.filter(p => p !== periodKey);
+          state.personalExpenses = (state.personalExpenses || []).filter(e => e.id !== 'pexp_fx_' + fxId + '_' + periodKey);
+          saveToCloud(); renderAll();
+        }, 'Скасувати оплату', true);
+        return;
+      }
+      fx.paidPeriods.push(periodKey);
+      
+      state.personalExpenses = state.personalExpenses || [];
+      state.personalExpenses.push({
+        id: 'pexp_fx_' + fxId + '_' + periodKey,
+        owner: k, date: dateInPeriod(), title: fx.title + ' (передплата)',
+        amount: fx.amount,
+        category: 'Передплати'
+      });
+      saveToCloud(); renderPersonalTabs(); renderAll();
+      showModal('Успіх', `Платіж ${fx.title} списано у витрати!`);
+    }
+
+    function deletePersonalFixed(k, fxId) {
+      if (!state.personalFixed || !state.personalFixed[k]) return;
+      state.personalFixed[k] = state.personalFixed[k].filter(x => x.id !== fxId);
+      saveToCloud(); renderPersonalTabs();
+    }
+
+    function updateFormOptions() {
+      const p1 = getPartner1Name(), p2 = getPartner2Name(), p1Avatar = getPartner1Avatar(), p2Avatar = getPartner2Avatar();
+      const curr = getCurrency(), categories = getCategories(), defSplit = state.settings.defaultSplit || '50-50';
+
+      const incPartnerSel = document.getElementById('income-partner');
+      if (incPartnerSel) {
+        const curVal = incPartnerSel.value;
+        incPartnerSel.innerHTML = `<option value="${p1}">${p1Avatar} ${p1}</option><option value="${p2}">${p2Avatar} ${p2}</option>`;
+        incPartnerSel.value = (curVal === p1 || curVal === p2) ? curVal : p1;
+      }
+
+      const expPayerSel = document.getElementById('exp-payer');
+      if (expPayerSel) {
+        const curVal = expPayerSel.value;
+        expPayerSel.innerHTML = `<option value="${p1}">${p1Avatar} ${p1}</option><option value="${p2}">${p2Avatar} ${p2}</option><option value="Спільно">👥 Спільно</option>`;
+        expPayerSel.value = (curVal === p1 || curVal === p2 || curVal === 'Спільно') ? curVal : p1;
+      }
+
+      const expSplitSel = document.getElementById('exp-split');
+      if (expSplitSel) {
+        const curVal = expSplitSel.value || defSplit;
+        expSplitSel.innerHTML = `<option value="50-50">50 / 50 (Порівну)</option><option value="proportional">Пропорційно доходу</option><option value="100-p1">100% ${p1}</option><option value="100-p2">100% ${p2}</option>`;
+        expSplitSel.value = curVal;
+      }
+
+      const expCatSel = document.getElementById('exp-category');
+      if (expCatSel) {
+        const curVal = expCatSel.value;
+        expCatSel.innerHTML = categories.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+        expCatSel.value = categories.includes(curVal) ? curVal : (categories[0] || '');
+      }
+
+      const fxCatSel = document.getElementById('fx-category');
+      if (fxCatSel) {
+        const curVal = fxCatSel.value;
+        fxCatSel.innerHTML = categories.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+        fxCatSel.value = categories.includes(curVal) ? curVal : (categories[0] || '');
+      }
+
+      document.querySelectorAll('.currency-symbol').forEach(el => { el.innerText = curr; });
+      updateFixedPayerOptions();
+      updateSettingsPreviews();
+    }
+
+    function formatPartnerBadge(name) {
+      const p1 = getPartner1Name(), p2 = getPartner2Name(), p1Avatar = getPartner1Avatar(), p2Avatar = getPartner2Avatar();
+      if (name === p1 || name === 'Партнер 1') return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-pink-50 text-pink-700 border"><span>${p1Avatar}</span><span>${p1}</span></span>`;
+      if (name === p2 || name === 'Партнер 2') return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 border"><span>${p2Avatar}</span><span>${p2}</span></span>`;
+      if (name === 'Спільно') return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-purple-50 text-purple-700 border"><span>👥</span><span>Спільно</span></span>`;
+      return `<span class="font-medium">${name}</span>`;
+    }
+
+    function addIncome(e) {
+      e.preventDefault();
+      state.incomes.push({ id: Date.now().toString(), date: document.getElementById('income-date').value || getTodayString(), partner: document.getElementById('income-partner').value, source: document.getElementById('income-source').value.trim(), amount: parseFloat(document.getElementById('income-amount').value) || 0 });
+      saveToCloud(); renderAll();
+      document.getElementById('income-form').reset();
+      document.getElementById('income-date').value = getTodayString();
+    }
+    function deleteIncome(id) { state.incomes = state.incomes.filter(i => i.id !== id); saveToCloud(); renderAll(); }
+
+    function addExpense(e) {
+      e.preventDefault();
+      state.expenses.push({ id: Date.now().toString(), date: document.getElementById('exp-date').value || getTodayString(), title: document.getElementById('exp-title').value.trim(), amount: parseFloat(document.getElementById('exp-amount').value) || 0, category: document.getElementById('exp-category').value, payer: document.getElementById('exp-payer').value, split: document.getElementById('exp-split').value });
+      saveToCloud(); renderAll();
+      document.getElementById('expense-form').reset();
+      document.getElementById('exp-date').value = getTodayString();
+    }
+    function deleteExpense(id) { state.expenses = state.expenses.filter(e => e.id !== id); unmarkPaid(id); saveToCloud(); renderAll(); }
+
+    function confirmSettlement() { showModal('Успішно', 'Взаєморозрахунки підтверджено!'); }
+
+    function updateSettingsPreviews() {
+      const p1Avatar = document.getElementById('settings-p1-avatar')?.value || getPartner1Avatar();
+      const p2Avatar = document.getElementById('settings-p2-avatar')?.value || getPartner2Avatar();
+      const p1Name = document.getElementById('settings-p1-name')?.value.trim() || getPartner1Name();
+      const p2Name = document.getElementById('settings-p2-name')?.value.trim() || getPartner2Name();
+      document.getElementById('p1-card-avatar').innerText = p1Avatar;
+      document.getElementById('p2-card-avatar').innerText = p2Avatar;
+      document.getElementById('preview-p1').innerHTML = `${p1Avatar} ${p1Name}`;
+      document.getElementById('preview-p2').innerHTML = `${p2Avatar} ${p2Name}`;
+    }
+
+    function populateSettingsForm() {
+      const s = state.settings || defaultSettings;
+      document.getElementById('settings-p1-name').value = s.partner1 || 'Партнер 1';
+      document.getElementById('settings-p2-name').value = s.partner2 || 'Партнер 2';
+      document.getElementById('settings-p1-avatar').value = s.partner1Avatar || '👩';
+      document.getElementById('settings-p2-avatar').value = s.partner2Avatar || '👨';
+      document.getElementById('settings-p1-color').value = s.partner1Color || '#ec4899';
+      document.getElementById('settings-p2-color').value = s.partner2Color || '#3b82f6';
+      document.getElementById('settings-currency').value = s.currency || '₴';
+      document.getElementById('settings-default-split').value = s.defaultSplit || '50-50';
+      updateSettingsPreviews();
+      renderCategoriesList();
+    }
+
+    function savePartnerSettings(e) {
+      if (e) e.preventDefault();
+      state.settings.partner1 = document.getElementById('settings-p1-name').value.trim() || 'Партнер 1';
+      state.settings.partner2 = document.getElementById('settings-p2-name').value.trim() || 'Партнер 2';
+      state.settings.partner1Avatar = document.getElementById('settings-p1-avatar').value;
+      state.settings.partner2Avatar = document.getElementById('settings-p2-avatar').value;
+      state.settings.partner1Color = document.getElementById('settings-p1-color').value;
+      state.settings.partner2Color = document.getElementById('settings-p2-color').value;
+      saveToCloud(); renderAll();
+      showModal('Збережено', 'Профілі оновлено!');
+    }
+
+    function saveFinanceSettings(e) {
+      if (e) e.preventDefault();
+      state.settings.currency = document.getElementById('settings-currency').value;
+      state.settings.defaultSplit = document.getElementById('settings-default-split').value;
+      saveToCloud(); renderAll();
+      showModal('Збережено', 'Параметри збережено!');
+    }
+
+    function renderCategoriesList() {
+      const container = document.getElementById('settings-categories-list');
+      if (!container) return;
+      const categories = getCategories();
+      container.innerHTML = categories.map((cat, idx) => `
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-700 border">
+          <span>${esc(cat)}</span>
+          <button type="button" onclick="deleteCategory(${idx})" class="text-slate-400 hover:text-rose-500 font-bold ml-1">✕</button>
+        </span>
+      `).join('');
+    }
+
+    function addCategory(e) {
+      e.preventDefault();
+      const input = document.getElementById('new-category-input'), val = input.value.trim();
+      if (!val) return;
+      if (!state.settings.categories) state.settings.categories = [...defaultSettings.categories];
+      if (state.settings.categories.includes(val)) { showModal('Увага', 'Категорія вже існує!'); return; }
+      state.settings.categories.push(val);
+      saveToCloud(); input.value = '';
+      renderCategoriesList(); updateFormOptions();
+    }
+
+    function deleteCategory(index) {
+      if (state.settings.categories.length <= 1) { showModal('Увага', 'Залишіть хоча б одну категорію.'); return; }
+      state.settings.categories.splice(index, 1);
+      saveToCloud(); renderCategoriesList(); updateFormOptions();
+    }
+
+    function resetCategoriesToDefault() {
+      showConfirmModal('Відновлення', 'Відновити типові категорії?', () => {
+        state.settings.categories = [...defaultSettings.categories];
+        saveToCloud(); renderCategoriesList(); updateFormOptions();
+        showModal('Готово', 'Категорії відновлено!');
+      });
+    }
+
+    function exportDataToJson() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(stripLocked(state), null, 2));
+      const dl = document.createElement('a');
+      dl.setAttribute("href", dataStr);
+      dl.setAttribute("download", `usbudget_v3.1_${new Date().toISOString().slice(0, 10)}.json`);
+      document.body.appendChild(dl); dl.click(); dl.remove();
+    }
+
+    function importDataFromJson(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imp = JSON.parse(e.target.result);
+          if (imp && (imp.incomes || imp.expenses || imp.settings)) {
+            const prev = JSON.parse(JSON.stringify(state)), locked = ['p1', 'p2'].filter(isLocked);
+            state = Object.assign(state, imp);
+            protectLocked(prev, locked);
+            saveToCloud(); renderAll();
+            showModal('Успіх', 'Дані імпортовано!');
+          } else { showModal('Помилка', 'Невірний формат.'); }
+        } catch (err) { showModal('Помилка', err.message); }
+      };
+      reader.readAsText(file);
+    }
+
+    function confirmResetToDemo() {
+      showConfirmModal('Демо-дані', 'Завантажити демо-записи?', () => {
+        const t = getTodayString();
+        const prev = JSON.parse(JSON.stringify(state)), locked = ['p1', 'p2'].filter(isLocked);
+        state.settings = { ...defaultSettings, partner1: 'Олена', partner2: 'Тарас', categoryLimits: { 'Оренда': 18000, 'Продукти': 10000, 'Ресторани': 5000 } };
+        state.incomes = [{ id: '1', date: t, partner: 'Олена', source: 'Дизайн', amount: 48000 }, { id: '2', date: t, partner: 'Тарас', source: 'Розробка', amount: 55000 }];
+        state.expenses = [{ id: '1', date: t, title: 'Оренда', category: 'Оренда', payer: 'Тарас', amount: 18000, split: 'proportional' }, { id: '2', date: t, title: 'Продукти', category: 'Продукти', payer: 'Олена', amount: 6400, split: '50-50' }];
+        state.goals = [{ id: '1', title: 'Карпати', target: 35000, current: 22000, scope: 'shared', deadline: '2027-07-01', history: [{date: t, partner: 'Олена', amount: 12000}, {date: t, partner: 'Тарас', amount: 10000}] }];
+        state.personalGoals = { p1: [{ id: 'p1_g1', title: 'Новий iPad', target: 20000, current: 8000 }], p2: [{ id: 'p2_g1', title: 'Плейстейшн', target: 18000, current: 12000 }] };
+        state.personalFixed = { p1: [{ id: 'pf1', title: 'Spotify Premium', amount: 150, paidPeriods: [] }], p2: [{ id: 'pf2', title: 'YouTube Premium', amount: 200, paidPeriods: [] }] };
+        protectLocked(prev, locked);
+        saveToCloud(); renderAll();
+        showModal('Готово', 'Демо-дані завантажено!');
+      });
+    }
+
+    function confirmClearAllData() {
+      showConfirmModal('Очищення', 'Видалити всі записи?', () => {
+        const prev = JSON.parse(JSON.stringify(state)), locked = ['p1', 'p2'].filter(isLocked);
+        state.incomes = []; state.expenses = []; state.fixedExpenses = []; state.goals = []; state.personalIncomes = []; state.personalExpenses = [];
+        state.personalGoals = { p1: [], p2: [] }; state.personalFixed = { p1: [], p2: [] };
+        protectLocked(prev, locked);
+        saveToCloud(); renderAll();
+        showModal('Очищено', 'Усі записи видалено.');
+      }, 'Очистити все', true);
+    }
+
+    function renderAll() {
+      const curr = getCurrency();
+      updateFormOptions();
+      populateSettingsForm();
+
+      const periodIncomes = filterByPeriod(state.incomes);
+      const periodExpenses = filterByPeriod(state.expenses);
+
+      const incTable = document.getElementById('incomes-table-body');
+      incTable.innerHTML = periodIncomes.length ? periodIncomes.map(i => `
+        <tr class="border-b border-slate-100 dark:border-slate-800/60">
+          <td class="py-3 text-xs text-slate-500">${i.date || '—'}</td>
+          <td class="py-3 font-medium">${formatPartnerBadge(i.partner)}</td>
+          <td class="py-3">${esc(i.source)}</td>
+          <td class="py-3 font-semibold text-emerald-600">+${i.amount.toLocaleString()} ${curr}</td>
+          <td class="py-3 text-right"><button onclick="deleteIncome('${i.id}')" class="text-rose-500 text-xs">Видалити</button></td>
+        </tr>
+      `).join('') : `<tr><td colspan="5" class="py-4 text-center text-slate-400 text-xs">Немає записів за період</td></tr>`;
+
+      const expTable = document.getElementById('expenses-table-body');
+      expTable.innerHTML = periodExpenses.length ? periodExpenses.map(e => `
+        <tr class="border-b border-slate-100 dark:border-slate-800/60">
+          <td class="py-3 text-xs text-slate-500">${e.date || '—'}</td>
+          <td class="py-3 font-medium">${esc(e.title)}</td>
+          <td class="py-3"><span class="px-2.5 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-700">${esc(e.category)}</span></td>
+          <td class="py-3">${formatPartnerBadge(e.payer)}</td>
+          <td class="py-3 text-xs text-slate-500">${getSplitName(e.split)}</td>
+          <td class="py-3 font-semibold text-rose-600">-${e.amount.toLocaleString()} ${curr}</td>
+          <td class="py-3 text-right"><button onclick="deleteExpense('${e.id}')" class="text-rose-500 text-xs">Видалити</button></td>
+        </tr>
+      `).join('') : `<tr><td colspan="7" class="py-4 text-center text-slate-400 text-xs">Немає записів за період</td></tr>`;
+
+      const totalIncome = periodIncomes.reduce((s, i) => s + i.amount, 0);
+      const totalExpenses = periodExpenses.filter(e => e.kind !== 'savings').reduce((s, e) => s + e.amount, 0);
+      const savings = Math.max(0, totalIncome - totalExpenses);
+      const savingsRate = totalIncome > 0 ? Math.round((savings / totalIncome) * 100) : 0;
+
+      document.getElementById('kpi-income').innerText = totalIncome.toLocaleString() + ' ' + curr;
+      document.getElementById('kpi-expenses').innerText = totalExpenses.toLocaleString() + ' ' + curr;
+      document.getElementById('kpi-savings').innerText = savings.toLocaleString() + ' ' + curr;
+      document.getElementById('kpi-savings-rate').innerText = savingsRate + '%';
+
+      calculateSettlement(totalIncome, curr, periodIncomes, periodExpenses);
+      renderPersonalTabs();
+      updatePrivacyStatus();
+      renderCharts(curr);
+      renderFixedExpenses();
+      renderDashboardLimits();
+      renderCategoryLimitsEditor();
+      renderGoals();
+    }
+
+    function getSplitName(code) {
+      const p1 = getPartner1Name(), p2 = getPartner2Name();
+      switch(code) {
+        case '50-50': return '50 / 50';
+        case 'proportional': return 'Пропорційно';
+        case '100-p1': return `100% ${p1}`;
+        case '100-p2': return `100% ${p2}`;
+        default: return code;
+      }
+    }
+
+    function calculateSettlement(totalInc, curr, periodIncomes, periodExpenses) {
+      const p1 = getPartner1Name(), p2 = getPartner2Name(), p1Avatar = getPartner1Avatar(), p2Avatar = getPartner2Avatar();
+      if (!curr) curr = getCurrency();
+      let p1Inc = periodIncomes.filter(i => i.partner === p1 || i.partner === 'Партнер 1').reduce((s, i) => s + i.amount, 0);
+      let p2Inc = periodIncomes.filter(i => i.partner === p2 || i.partner === 'Партнер 2').reduce((s, i) => s + i.amount, 0);
+      let p1Ratio = totalInc > 0 ? (p1Inc / totalInc) : 0.5, p1OwesP2 = 0;
+
+      periodExpenses.forEach(e => {
+        let p1Share = 0, p2Share = 0;
+        if (e.split === '50-50') { p1Share = e.amount * 0.5; p2Share = e.amount * 0.5; }
+        else if (e.split === 'proportional') { p1Share = e.amount * p1Ratio; p2Share = e.amount * (1 - p1Ratio); }
+        else if (e.split === '100-p1') p1Share = e.amount;
+        else if (e.split === '100-p2') p2Share = e.amount;
+        if (e.payer === p1 || e.payer === 'Партнер 1') p1OwesP2 -= p2Share;
+        else if (e.payer === p2 || e.payer === 'Партнер 2') p1OwesP2 += p1Share;
+      });
+
+      const badge = document.getElementById('settlement-badge'), text = document.getElementById('settlement-text'), details = document.getElementById('settlement-details');
+      if (Math.abs(p1OwesP2) < 1) {
+        badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800'; badge.innerText = 'Баланс врегульовано'; text.innerText = 'Ніхто нікому не винен'; details.innerText = 'Усі спільні витрати розподілено рівномірно.';
+      } else if (p1OwesP2 > 0) {
+        badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-pink-100 text-pink-800'; badge.innerText = 'Розрахунок'; text.innerText = `${p1Avatar} ${p1} винен(-на) для ${p2Avatar} ${p2}: ${Math.round(p1OwesP2).toLocaleString()} ${curr}`; details.innerText = 'Перерахуйте цю суму для вирівнювання балансу.';
+      } else {
+        badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800'; badge.innerText = 'Розрахунок'; text.innerText = `${p2Avatar} ${p2} винен(-на) для ${p1Avatar} ${p1}: ${Math.round(-p1OwesP2).toLocaleString()} ${curr}`; details.innerText = 'Перерахуйте цю суму для вирівнювання балансу.';
+      }
+    }
+
+    function renderCharts(curr) {
+      if (!curr) curr = getCurrency();
+      const isDark = document.documentElement.classList.contains('dark'), textColor = isDark ? '#94a3b8' : '#64748b';
+      const p1 = getPartner1Name(), p2 = getPartner2Name(), p1Color = getPartner1Color(), p2Color = getPartner2Color();
+      const periodIncomes = filterByPeriod(state.incomes), periodExpenses = filterByPeriod(state.expenses);
+
+      const catMap = {}; periodExpenses.forEach(e => { catMap[e.category] = (catMap[e.category] || 0) + e.amount; });
+      const catCanvas = document.getElementById('expenseCategoryChart');
+      if (catCanvas) {
+        if (expenseCategoryChartInstance) expenseCategoryChartInstance.destroy();
+        expenseCategoryChartInstance = new Chart(catCanvas.getContext('2d'), {
+          type: 'doughnut',
+          data: { labels: Object.keys(catMap).length ? Object.keys(catMap) : ['Без витрат'], datasets: [{ data: Object.values(catMap).length ? Object.values(catMap) : [1], backgroundColor: usbChartColors(), borderWidth: 0 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 12 } } } } }
+        });
+      }
+
+      const partnerMap = { [p1]: 0, [p2]: 0 };
+      periodIncomes.forEach(i => { let key = (i.partner === 'Партнер 1' || i.partner === p1) ? p1 : p2; partnerMap[key] = (partnerMap[key] || 0) + i.amount; });
+      const partCanvas = document.getElementById('partnerContributionChart');
+      if (partCanvas) {
+        if (partnerContributionChartInstance) partnerContributionChartInstance.destroy();
+        partnerContributionChartInstance = new Chart(partCanvas.getContext('2d'), {
+          type: 'bar',
+          data: { labels: Object.keys(partnerMap), datasets: [{ data: Object.values(partnerMap), backgroundColor: [p1Color, p2Color], borderRadius: 12 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: textColor }, grid: { display: false } }, y: { ticks: { color: textColor }, grid: { color: isDark ? '#334155' : '#f1f5f9' } } } }
+        });
+      }
+    }
+
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const sumBy = (arr, fn) => arr.reduce((s, x) => s + fn(x), 0);
+
+    function buildPersonalShells() {
+      const card = 'bg-white dark:bg-slate-800/80 p-6 rounded-2xl border shadow-xs';
+      const inp = 'w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm';
+      const lbl = 'block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300';
+      const btn = 'w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-4 rounded-xl text-sm shadow-sm';
+      const th = 'pb-3 font-semibold';
+
+      ['p1', 'p2'].forEach(k => {
+        const el = document.getElementById('tab-' + k);
+        if (!el) return;
+        el.innerHTML = `
+          <div id="pp-${k}-lock" class="pp-lockbox hidden"></div>
+          <div id="pp-${k}-head" class="${card} flex flex-col md:flex-row md:items-center justify-between gap-4"></div>
+          <div id="pp-${k}-kpi" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="${card} space-y-4">
+              <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold flex items-center gap-2"><span>💎</span> Особисті цілі та скарбнички</h3>
+                <span class="text-xs text-slate-400">Приватні цілі</span>
+              </div>
+              <form onsubmit="addPersonalGoal('${k}', event)" class="flex gap-2">
+                <input type="text" id="pp-${k}-goal-title" required placeholder="Назва (напр. iPad)" class="${inp}">
+                <input type="number" id="pp-${k}-goal-target" min="1" required placeholder="Ціль ₴" class="w-32 ${inp}">
+                <button type="submit" class="bg-slate-800 text-white font-medium px-4 rounded-xl text-xs shrink-0">+ Додати</button>
+              </form>
+              <div id="pp-${k}-goals-list" class="space-y-3 pt-2"></div>
+            </div>
+
+            <div class="${card} space-y-4">
+              <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold flex items-center gap-2"><span>🔄</span> Особисті передплати / регулярні</h3>
+                <span class="text-xs text-slate-400">Spotify, зал...</span>
+              </div>
+              <form onsubmit="addPersonalFixed('${k}', event)" class="flex gap-2">
+                <input type="text" id="pp-${k}-fx-title" required placeholder="Назва (напр. Spotify)" class="${inp}">
+                <input type="number" id="pp-${k}-fx-amount" min="1" required placeholder="Сума ₴" class="w-28 ${inp}">
+                <button type="submit" class="bg-slate-800 text-white font-medium px-4 rounded-xl text-xs shrink-0">+ Додати</button>
+              </form>
+              <div id="pp-${k}-fixed-list" class="space-y-2 pt-2"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="${card}">
+              <h3 class="text-lg font-bold mb-4">Додати особистий дохід</h3>
+              <form onsubmit="addPersonalIncome('${k}', event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <div><label class="${lbl}">Дата</label><input type="date" id="pp-${k}-inc-date" required value="${getTodayString()}" class="${inp}"></div>
+                <div><label class="${lbl}">Джерело</label><input type="text" id="pp-${k}-inc-source" required placeholder="Підробіток..." class="${inp}"></div>
+                <div><label class="${lbl}">Сума (<span class="currency-symbol">₴</span>)</label><input type="number" id="pp-${k}-inc-amount" min="1" required placeholder="2000" class="${inp}"></div>
+                <div class="flex items-end"><button type="submit" class="${btn}">+ Додати</button></div>
+              </form>
+            </div>
+
+            <div class="${card}">
+              <h3 class="text-lg font-bold mb-4">Додати особисту витрату</h3>
+              <form onsubmit="addPersonalExpense('${k}', event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div><label class="${lbl}">Дата</label><input type="date" id="pp-${k}-exp-date" required value="${getTodayString()}" class="${inp}"></div>
+                <div><label class="${lbl}">Назва</label><input type="text" id="pp-${k}-exp-title" required placeholder="Покупка..." class="${inp}"></div>
+                <div><label class="${lbl}">Сума (<span class="currency-symbol">₴</span>)</label><input type="number" id="pp-${k}-exp-amount" min="1" required placeholder="800" class="${inp}"></div>
+                <div><label class="${lbl}">Категорія</label><select id="pp-${k}-exp-cat" class="${inp}"></select></div>
+                <div class="sm:col-span-2 flex items-end"><button type="submit" class="${btn}">+ Додати</button></div>
+              </form>
+            </div>
+          </div>
+
+          <div class="${card} space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+              <h3 class="text-base font-bold flex items-center gap-2"><span>🏷️</span> Власні категорії та ліміти витрат</h3>
+              <form onsubmit="addPersonalCategory('${k}', event)" class="flex gap-2">
+                <input type="text" id="pp-${k}-new-cat" placeholder="Нова персональна категорія..." class="p-2 text-xs rounded-xl border bg-slate-50 dark:bg-slate-900 w-48">
+                <button type="submit" class="bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs">+ Додати</button>
+              </form>
+            </div>
+            <div id="pp-${k}-categories-limits" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="${card}">
+              <h3 class="text-lg font-bold mb-4">Мої доходи</h3>
+              <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left text-sm">
+                  <thead><tr class="border-b text-slate-500"><th class="${th}">Дата</th><th class="${th}">Джерело</th><th class="${th}">Сума</th><th class="${th} text-right">Дії</th></tr></thead>
+                  <tbody id="pp-${k}-inc-body"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="${card}">
+              <h3 class="text-lg font-bold mb-4">Мої витрати</h3>
+              <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left text-sm">
+                  <thead><tr class="border-b text-slate-500"><th class="${th}">Дата</th><th class="${th}">Назва</th><th class="${th}">Категорія</th><th class="${th}">Сума</th><th class="${th} text-right">Дії</th></tr></thead>
+                  <tbody id="pp-${k}-exp-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="${card}">
+            <h3 class="font-bold text-base mb-4 flex items-center gap-2"><span>🍰</span> Структура особистих витрат за категоріями</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+              <div class="relative h-64"><canvas id="pp-${k}-chart"></canvas></div>
+              <div id="pp-${k}-cats" class="space-y-3"></div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function personalOf(k) {
+      const isP1 = k === 'p1', n1 = getPartner1Name(), n2 = getPartner2Name();
+      const mode = (state.personalModes && state.personalModes[k]) || 'integrated';
+      const periodIncomes = filterByPeriod(state.incomes);
+      const periodExpenses = filterByPeriod(state.expenses);
+
+      const is1 = i => i.partner === n1 || i.partner === 'Партнер 1';
+      const is2 = i => i.partner === n2 || i.partner === 'Партнер 2';
+      const inc1 = sumBy(periodIncomes.filter(is1), i => i.amount);
+      const inc2 = sumBy(periodIncomes.filter(is2), i => i.amount);
+      const tot = inc1 + inc2;
+      const ratio = tot > 0 ? (isP1 ? inc1 : inc2) / tot : 0.5;
+
+      let share = 0;
+      if (mode === 'integrated') {
+        periodExpenses.forEach(e => {
+          if (e.split === '50-50') share += e.amount * 0.5;
+          else if (e.split === 'proportional') share += e.amount * ratio;
+          else if (e.split === (isP1 ? '100-p1' : '100-p2')) share += e.amount;
+        });
+      }
+
+      const shared = periodIncomes.filter(isP1 ? is1 : is2);
+      const pi = filterByPeriod((state.personalIncomes || []).filter(x => x.owner === k));
+      const pe = filterByPeriod((state.personalExpenses || []).filter(x => x.owner === k));
+      const extra = sumBy(pi, x => x.amount);
+      const income = (mode === 'autonomous' ? 0 : sumBy(shared, i => i.amount)) + extra;
+      const spent = sumBy(pe, x => x.amount);
+      return { shared, pi, pe, extra, income, share, spent, left: income - share - spent, mode };
+    }
+
+    function addPersonalIncome(k, e) {
+      e.preventDefault();
+      state.personalIncomes = state.personalIncomes || [];
+      state.personalIncomes.push({
+        id: Date.now().toString(), owner: k,
+        date: document.getElementById(`pp-${k}-inc-date`).value || getTodayString(),
+        source: document.getElementById(`pp-${k}-inc-source`).value.trim(),
+        amount: parseFloat(document.getElementById(`pp-${k}-inc-amount`).value) || 0
+      });
+      saveToCloud(); renderAll(); e.target.reset();
+      document.getElementById(`pp-${k}-inc-date`).value = getTodayString();
+    }
+
+    function addPersonalExpense(k, e) {
+      e.preventDefault();
+      state.personalExpenses = state.personalExpenses || [];
+      state.personalExpenses.push({
+        id: Date.now().toString(), owner: k,
+        date: document.getElementById(`pp-${k}-exp-date`).value || getTodayString(),
+        title: document.getElementById(`pp-${k}-exp-title`).value.trim(),
+        amount: parseFloat(document.getElementById(`pp-${k}-exp-amount`).value) || 0,
+        category: document.getElementById(`pp-${k}-exp-cat`).value
+      });
+      saveToCloud(); renderAll();
+      const cat = document.getElementById(`pp-${k}-exp-cat`).value;
+      e.target.reset();
+      document.getElementById(`pp-${k}-exp-date`).value = getTodayString();
+      document.getElementById(`pp-${k}-exp-cat`).value = cat;
+    }
+
+    function deletePersonal(kind, id) { state[kind] = state[kind].filter(x => x.id !== id); unmarkPaid(id); saveToCloud(); renderAll(); }
+
+    let PALETTE = usbChartColors();
+
+    function renderPersonalChart(k, entries) {
+      const canvas = document.getElementById(`pp-${k}-chart`);
+      if (!canvas || canvas.offsetParent === null) return;
+      if (personalCharts[k]) personalCharts[k].destroy();
+      const isDark = document.documentElement.classList.contains('dark');
+      const curr = getCurrency(), has = entries.length > 0, total = entries.reduce((s, e) => s + e[1], 0);
+
+      personalCharts[k] = new Chart(canvas.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: has ? entries.map(e => e[0]) : ['Без витрат'],
+          datasets: [{ data: has ? entries.map(e => e[1]) : [1], backgroundColor: has ? PALETTE : [isDark ? '#334155' : '#e2e8f0'], borderWidth: 0 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: '62%',
+          plugins: {
+            legend: { position: 'bottom', labels: { color: isDark ? '#94a3b8' : '#64748b', font: { family: 'Plus Jakarta Sans', size: 12 } } },
+            tooltip: { enabled: has, callbacks: { label: c => ` ${c.label}: ${Math.round(c.parsed).toLocaleString()} ${curr} (${Math.round(c.parsed / total * 100)}%)` } }
+          }
+        }
+      });
+    }
+
+    function renderPersonalTabs() {
+      PALETTE = usbChartColors();
+      const curr = getCurrency();
+      const f = n => Math.round(n).toLocaleString() + ' ' + curr;
+      const periodExpenses = filterByPeriod(state.expenses);
+      const totalExp = sumBy(periodExpenses, e => e.amount);
+      const { periodKey } = getPeriodRange();
+      const rowCls = 'border-b border-slate-100 dark:border-slate-800/60';
+      const empty = (cols, text) => `<tr><td colspan="${cols}" class="py-4 text-center text-slate-400 text-xs">${text}</td></tr>`;
+
+      ['p1', 'p2'].forEach(k => {
+        const head = document.getElementById(`pp-${k}-head`);
+        if (!head) return;
+        const isP1 = k === 'p1';
+        const name = esc(isP1 ? getPartner1Name() : getPartner2Name());
+        const avatar = isP1 ? getPartner1Avatar() : getPartner2Avatar();
+        const color = isP1 ? getPartner1Color() : getPartner2Color();
+        const d = personalOf(k);
+
+        const tabBtn = document.getElementById('btn-' + k);
+        if (tabBtn) tabBtn.innerHTML = `<span>${avatar}</span> ${name}`;
+        renderLockBox(k);
+        if (isLocked(k)) { const t = document.getElementById(`pp-${k}-lock-title`); if (t) t.innerText = `${avatar} ${isP1 ? getPartner1Name() : getPartner2Name()}: розділ заблоковано`; return; }
+
+        head.style.borderLeft = `4px solid ${color}`;
+        head.innerHTML = `
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0" style="background:${color}22">${avatar}</div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Особистий бюджет: ${name}</h2>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${d.mode === 'autonomous' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
+                  ${d.mode === 'autonomous' ? '⚡ Автономний режим' : '🔗 Інтегрований з парою'}
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">${d.mode === 'autonomous' ? 'Незалежний трекер: без спільних доходів і частки у спільних витратах' : 'Дохід мінус частка у спільних витратах пари та особисті витрати'}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="togglePersonalMode('${k}')" class="px-3 py-1.5 rounded-xl text-xs font-medium border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100">
+              ${d.mode === 'autonomous' ? 'Переключити на Інтегрований' : 'Переключити на Автономний'}
+            </button>
+            ${pinOf(k)
+              ? `<button onclick="lockPartner('${k}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-700/60 transition">🔒 Заблокувати</button>`
+              : `<button onclick="switchTab('settings')" class="px-3 py-1.5 rounded-xl text-xs text-slate-500">🔓 Без PIN</button>`}
+          </div>
+        `;
+
+        const kpi = (label, val, sub, cls = 'text-slate-900 dark:text-white') => `
+          <div class="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border shadow-xs">
+            <div class="text-slate-500 text-xs font-medium">${label}</div>
+            <h3 class="text-2xl font-bold mt-2 ${cls}">${val}</h3>
+            <p class="text-xs text-slate-400 mt-1">${sub}</p>
+          </div>`;
+        const rate = d.income > 0 ? Math.round(d.left / d.income * 100) : 0;
+        document.getElementById(`pp-${k}-kpi`).innerHTML =
+          kpi('Особистий Дохід', f(d.income), `власні: ${f(d.extra)}`) +
+          kpi(d.mode === 'autonomous' ? 'Спільна частка' : 'Частка у спільних', d.mode === 'autonomous' ? '0 ' + curr : f(d.share), d.mode === 'autonomous' ? 'відключено' : `загальні: ${f(totalExp)}`) +
+          kpi('Особисті витрати', f(d.spent), `записів: ${d.pe.length}`) +
+          kpi('Вільний залишок', f(d.left), `Норма заощаджень: ${rate}%`, d.left < 0 ? 'text-rose-600' : 'text-emerald-600');
+
+        const pGoals = (state.personalGoals && state.personalGoals[k]) || [];
+        const goalsContainer = document.getElementById(`pp-${k}-goals-list`);
+        if (goalsContainer) {
+          goalsContainer.innerHTML = pGoals.length ? pGoals.map(g => {
+            const pct = g.target > 0 ? Math.min(100, Math.round((g.current / g.target) * 100)) : 0;
+            return `
+              <div class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40 space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-bold">${esc(g.title)}</span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-slate-500">${g.current.toLocaleString()} / ${g.target.toLocaleString()} ${curr} (${pct}%)</span>
+                    <button onclick="deletePersonalGoal('${k}', '${g.id}')" class="text-rose-500 hover:text-rose-700">✕</button>
+                  </div>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                  <div class="bg-pink-500 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                </div>
+                <div class="flex justify-end gap-2 text-[11px]">
+                  <button onclick="depositToPersonalGoal('${k}', '${g.id}', 500)" class="px-2 py-1 rounded bg-white dark:bg-slate-800 border text-slate-700 dark:text-slate-300">+500 ${curr}</button>
+                  <button onclick="transferFreeBalanceToGoal('${k}', '${g.id}')" class="px-2 py-1 rounded bg-pink-500 text-white font-semibold">Внести залишок</button>
+                </div>
+              </div>
+            `;
+          }).join('') : `<p class="text-xs text-slate-400 py-2">Скарбнички відсутні</p>`;
+        }
+
+        const pFixed = (state.personalFixed && state.personalFixed[k]) || [];
+        const fixedContainer = document.getElementById(`pp-${k}-fixed-list`);
+        if (fixedContainer) {
+          fixedContainer.innerHTML = pFixed.length ? pFixed.map(fx => {
+            const isPaid = (fx.paidPeriods || []).includes(periodKey);
+            return `
+              <div class="p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900/40 flex justify-between items-center text-xs">
+                <div>
+                  <span class="font-bold block">${esc(fx.title)}</span>
+                  <span class="text-slate-400">${fx.amount.toLocaleString()} ${curr}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button onclick="markPersonalFixedPaid('${k}', '${fx.id}')" class="px-2.5 py-1 rounded-lg font-semibold transition ${isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-pink-500 text-white'}">
+                    ${isPaid ? '✅ Сплачено' : '💳 Сплатити'}
+                  </button>
+                  <button onclick="deletePersonalFixed('${k}', '${fx.id}')" class="text-rose-500">✕</button>
+                </div>
+              </div>
+            `;
+          }).join('') : `<p class="text-xs text-slate-400 py-2">Особисті передплати відсутні</p>`;
+        }
+
+        const pCats = (state.personalCategories && state.personalCategories[k]) || ['Хобі', 'Догляд'];
+        const pLimits = (state.personalCategoryLimits && state.personalCategoryLimits[k]) || {};
+        const pExpByCat = {};
+        d.pe.forEach(x => { pExpByCat[x.category] = (pExpByCat[x.category] || 0) + x.amount; });
+
+        const pCatLimitsBox = document.getElementById(`pp-${k}-categories-limits`);
+        if (pCatLimitsBox) {
+          pCatLimitsBox.innerHTML = pCats.map(cat => {
+            const lim = pLimits[cat] || 0, limP = Math.round(lim * (currentPeriod.type === 'week' ? 12 / 52 : 1));
+            const spent = pExpByCat[cat] || 0;
+            const pct = limP > 0 ? Math.min(100, Math.round((spent / limP) * 100)) : 0;
+            return `
+              <div class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40 space-y-1.5">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-semibold text-slate-700 dark:text-slate-300">${esc(cat)}</span>
+                  <button onclick="deletePersonalCategory('${k}', '${esc(cat)}')" class="text-slate-400 hover:text-rose-500 text-xs">✕</button>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <input type="number" min="0" value="${lim || ''}" placeholder="Ліміт ${curr}" 
+                    onchange="updatePersonalCategoryLimit('${k}', '${esc(cat)}', this.value)" 
+                    class="w-full p-1.5 rounded-lg border bg-white dark:bg-slate-900 text-xs">
+                </div>
+                ${lim > 0 ? `
+                  <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                    <div class="${spent > limP ? 'bg-rose-500' : 'bg-emerald-500'} h-full transition-all" style="width: ${pct}%"></div>
+                  </div>
+                  <div class="text-[10px] text-slate-400 text-right">${spent} / ${limP} ${curr}</div>
+                ` : ''}
+              </div>
+            `;
+          }).join('');
+        }
+
+        const sel = document.getElementById(`pp-${k}-exp-cat`);
+        if (sel) {
+          const cur = sel.value;
+          const allCats = Array.from(new Set([...getCategories(), ...pCats, 'Передплати']));
+          sel.innerHTML = allCats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+          if (allCats.includes(cur)) sel.value = cur;
+        }
+
+        const sharedRows = d.mode === 'integrated' ? d.shared.map(i => `<tr class="${rowCls}"><td class="py-3 text-xs text-slate-500">${i.date || '—'}</td><td class="py-3">${esc(i.source)} <span class="text-[10px] text-slate-400">спільний</span></td><td class="py-3 font-semibold text-emerald-600">+${i.amount.toLocaleString()} ${curr}</td><td></td></tr>`) : [];
+        const ownRows = d.pi.map(i => `<tr class="${rowCls}"><td class="py-3 text-xs text-slate-500">${i.date || '—'}</td><td class="py-3">${esc(i.source)}</td><td class="py-3 font-semibold text-emerald-600">+${i.amount.toLocaleString()} ${curr}</td><td class="text-right"><button onclick="deletePersonal('personalIncomes', '${i.id}')" class="text-rose-500 text-xs">Видалити</button></td></tr>`);
+        document.getElementById(`pp-${k}-inc-body`).innerHTML = sharedRows.concat(ownRows).length ? sharedRows.concat(ownRows).join('') : empty(4, 'Немає доходів');
+
+        document.getElementById(`pp-${k}-exp-body`).innerHTML = d.pe.length ? d.pe.map(x => `
+          <tr class="${rowCls}">
+            <td class="py-3 text-xs text-slate-500">${x.date || '—'}</td>
+            <td class="py-3 font-medium">${esc(x.title)}</td>
+            <td class="py-3"><span class="px-2.5 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-700">${esc(x.category)}</span></td>
+            <td class="py-3 font-semibold text-rose-600">-${x.amount.toLocaleString()} ${curr}</td>
+            <td class="py-3 text-right"><button onclick="deletePersonal('personalExpenses', '${x.id}')" class="text-rose-500 text-xs">Видалити</button></td>
+          </tr>`).join('') : empty(5, 'Немає витрат');
+
+        const byCat = {}; d.pe.forEach(x => { byCat[x.category] = (byCat[x.category] || 0) + x.amount; });
+        const entries = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+        renderPersonalChart(k, entries);
+        document.getElementById(`pp-${k}-cats`).innerHTML = entries.length ? entries.map(([c, v], i) => {
+          const pct = d.spent > 0 ? Math.round(v / d.spent * 100) : 0;
+          return `<div><div class="flex justify-between text-xs mb-1"><span class="font-medium flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full" style="background:${PALETTE[i % PALETTE.length]}"></span>${esc(c)}</span><span class="text-slate-500">${f(v)} · ${pct}%</span></div><div class="h-2 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden"><div class="h-full rounded-full" style="width:${pct}%;background:${PALETTE[i % PALETTE.length]}"></div></div></div>`;
+        }).join('') : '<p class="text-center text-slate-400 text-xs py-2">Додайте витрату за період</p>';
+      });
+    }
+
+    const unlocked = {};
+    try { Object.assign(unlocked, JSON.parse(sessionStorage.getItem('usbudget_unlocked') || '{}')); } catch (e) {}
+    let lastActivity = Date.now();
+    const pinOf = k => (state.settings && state.settings.pins && state.settings.pins[k]) || null;
+    const isLocked = k => !!pinOf(k) && !unlocked[k];
+    const saveUnlocked = () => { try { sessionStorage.setItem('usbudget_unlocked', JSON.stringify(unlocked)); } catch (e) {} };
+
+    async function pinHash(pin, salt) {
+      const data = new TextEncoder().encode(salt + ':' + pin);
+      if (window.crypto && crypto.subtle) {
+        const buf = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+      let h = 5381; data.forEach(c => { h = ((h << 5) + h + c) >>> 0; });
+      return 'f' + h.toString(16);
+    }
+
+    function initPrivacy() {
+      ['click', 'keydown', 'touchstart', 'mousemove'].forEach(ev => document.addEventListener(ev, () => { lastActivity = Date.now(); }, { passive: true }));
+      setInterval(() => {
+        if (Date.now() - lastActivity < 5 * 60 * 1000) return;
+        ['p1', 'p2'].forEach(k => { if (pinOf(k) && unlocked[k]) lockPartner(k); });
+      }, 30000);
+    }
+
+    function renderLockBox(k) {
+      const box = document.getElementById(`pp-${k}-lock`), el = document.getElementById('tab-' + k);
+      if (!box || !el) return;
+      const locked = isLocked(k);
+      el.classList.toggle('pp-locked', locked);
+      box.classList.toggle('hidden', !locked);
+      if (!locked) return;
+      if (!box.dataset.ready) {
+        box.dataset.ready = '1';
+        box.innerHTML = `
+          <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl border shadow-xl max-w-sm mx-auto text-center space-y-4">
+            <div class="text-4xl">🔒</div>
+            <h3 id="pp-${k}-lock-title" class="text-lg font-bold"></h3>
+            <input type="password" inputmode="numeric" maxlength="8" id="pp-${k}-pin" autocomplete="off" onkeydown="if(event.key==='Enter')unlockPartner('${k}')" class="w-full p-3 rounded-xl border bg-slate-50 dark:bg-slate-900 text-center text-lg tracking-widest">
+            <button onclick="unlockPartner('${k}')" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 rounded-xl text-sm shadow-sm">Розблокувати</button>
+            <p id="pp-${k}-pin-err" class="text-xs text-rose-500 min-h-4"></p>
+            <button onclick="forgotPin('${k}')" class="text-xs text-slate-500 hover:underline">Забули PIN?</button>
+          </div>`;
+      }
+    }
+
+    async function unlockPartner(k) {
+      const rec = pinOf(k), inp = document.getElementById(`pp-${k}-pin`);
+      if (!rec || !inp) return;
+      if (await pinHash(inp.value, rec.salt) === rec.hash) {
+        unlocked[k] = true; saveUnlocked(); inp.value = ''; renderPersonalTabs();
+      } else { const er = document.getElementById(`pp-${k}-pin-err`); if (er) er.innerText = 'Невірний PIN'; inp.value = ''; inp.focus(); }
+    }
+
+    function lockPartner(k) {
+      delete unlocked[k]; saveUnlocked();
+      ['head', 'kpi', 'inc-body', 'exp-body', 'cats', 'goals-list', 'fixed-list', 'categories-limits'].forEach(id => { const e = document.getElementById(`pp-${k}-${id}`); if (e) e.innerHTML = ''; });
+      if (personalCharts[k]) { personalCharts[k].destroy(); delete personalCharts[k]; }
+      renderPersonalTabs();
+    }
+
+    function buildPrivacySettings() {
+      const host = document.getElementById('privacy-settings');
+      if (!host) return;
+      const inp = 'w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm';
+      host.innerHTML = ['p1', 'p2'].map(k => `
+        <div class="p-5 rounded-2xl border space-y-3">
+          <div class="flex justify-between items-center"><span class="font-semibold text-sm">${k === 'p1' ? getPartner1Name() : getPartner2Name()}</span><span id="pin-st-${k}" class="text-xs"></span></div>
+          <input type="password" inputmode="numeric" maxlength="8" id="pin-cur-${k}" placeholder="Поточний PIN" class="${inp}">
+          <input type="password" inputmode="numeric" maxlength="8" id="pin-new-${k}" placeholder="Новий PIN (4-8 цифр)" class="${inp}">
+          <div class="flex gap-2">
+            <button type="button" onclick="savePin('${k}')" class="flex-1 bg-pink-500 text-white py-2 rounded-xl text-sm font-semibold">Зберегти</button>
+            <button type="button" onclick="removePin('${k}')" class="px-3 py-2 text-rose-600 border rounded-xl text-sm">Прибрати</button>
+          </div>
+        </div>`).join('');
+    }
+
+    function updatePrivacyStatus() {
+      ['p1', 'p2'].forEach(k => {
+        const has = !!pinOf(k), st = document.getElementById(`pin-st-${k}`);
+        if (!st) return;
+        st.innerText = has ? '🔒 Захищено' : '🔓 Без захисту';
+        document.getElementById(`pin-cur-${k}`).classList.toggle('hidden', !has);
+      });
+    }
+
+    
+
+    // --- v3.1: допоміжні функції ---
+    const PERS_KEYS = ['personalGoals', 'personalFixed', 'personalCategories', 'personalCategoryLimits', 'personalModes'];
+    const FREQ = { week: 'Щотижня', month: 'Щомісяця', quarter: 'Щокварталу', year: 'Щороку' };
+
+    function toLocalISO(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+    function parseLocalDate(str) { const p = String(str).split('-').map(Number); return new Date(p[0], (p[1] || 1) - 1, p[2] || 1, 12); }
+
+    // Дата проведення платежу: сьогодні, якщо воно у вибраному періоді, інакше початок періоду
+    function dateInPeriod() {
+      const { start, end } = getPeriodRange(), n = new Date();
+      return (n >= start && n <= end) ? toLocalISO(n) : toLocalISO(start);
+    }
+
+    // Записам без дати призначаємо сьогоднішню, щоб вони не потрапляли в усі періоди
+    function normalizeDates() {
+      const t = getTodayString(); let changed = false;
+      ['incomes', 'expenses', 'personalIncomes', 'personalExpenses'].forEach(p => (state[p] || []).forEach(x => { if (!x.date) { x.date = t; changed = true; } }));
+      return changed;
+    }
+
+    // Якщо згенеровану витрату видалили, знімаємо позначку «сплачено»
+    function unmarkPaid(eid) {
+      const strip = fx => { fx.paidPeriods = (fx.paidPeriods || []).filter(p => eid !== 'exp_fx_' + fx.id + '_' + p && eid !== 'pexp_fx_' + fx.id + '_' + p); };
+      (state.fixedExpenses || []).forEach(strip);
+      ['p1', 'p2'].forEach(k => ((state.personalFixed || {})[k] || []).forEach(strip));
+    }
+
+    // Експорт без даних заблокованих розділів і без хешів PIN
+    function stripLocked(src) {
+      const c = JSON.parse(JSON.stringify(src));
+      ['p1', 'p2'].filter(isLocked).forEach(k => {
+        c.personalIncomes = (c.personalIncomes || []).filter(x => x.owner !== k);
+        c.personalExpenses = (c.personalExpenses || []).filter(x => x.owner !== k);
+        PERS_KEYS.forEach(p => { if (c[p]) delete c[p][k]; });
+      });
+      if (c.settings) delete c.settings.pins;
+      return c;
+    }
+
+    // Після імпорту, демо чи очищення повертаємо PIN і дані заблокованих розділів
+    function protectLocked(prev, locked) {
+      if (!state.settings) state.settings = Object.assign({}, defaultSettings);
+      if (prev.settings && prev.settings.pins) state.settings.pins = prev.settings.pins; else delete state.settings.pins;
+      locked.forEach(k => {
+        ['personalIncomes', 'personalExpenses'].forEach(p => { state[p] = (prev[p] || []).filter(x => x.owner === k).concat((state[p] || []).filter(x => x.owner !== k)); });
+        PERS_KEYS.forEach(p => { if (prev[p] && prev[p][k] !== undefined) { state[p] = Object.assign({}, state[p]); state[p][k] = prev[p][k]; } });
+      });
+    }
+
+    async function checkCurrentPin(k) {
+      const rec = pinOf(k);
+      if (!rec) return true;
+      const cur = document.getElementById(`pin-cur-${k}`);
+      if (cur && await pinHash(cur.value, rec.salt) === rec.hash) return true;
+      showModal('Увага', 'Поточний PIN невірний.');
+      return false;
+    }
+
+    async function savePin(k) {
+      const n1 = document.getElementById(`pin-new-${k}`);
+      if (!(await checkCurrentPin(k))) return;
+      if (!/^\d{4,8}$/.test(n1.value)) { showModal('Увага', 'PIN має бути від 4 до 8 цифр.'); return; }
+      const salt = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      state.settings.pins = Object.assign({}, state.settings.pins, { [k]: { salt, hash: await pinHash(n1.value, salt) } });
+      unlocked[k] = true; saveUnlocked(); n1.value = '';
+      const c = document.getElementById(`pin-cur-${k}`); if (c) c.value = '';
+      saveToCloud(); renderAll();
+      showModal('Збережено', 'PIN встановлено!');
+    }
+
+    async function removePin(k) {
+      if (!pinOf(k)) return;
+      if (!(await checkCurrentPin(k))) return;
+      delete state.settings.pins[k]; delete unlocked[k]; saveUnlocked();
+      const c = document.getElementById(`pin-cur-${k}`); if (c) c.value = '';
+      saveToCloud(); renderAll();
+      showModal('Готово', 'PIN знято.');
+    }
+
+    function forgotPin(k) {
+      const name = k === 'p1' ? getPartner1Name() : getPartner2Name();
+      showConfirmModal('Скинути PIN?', `Щоб захист не можна було обійти, скидання PIN видалить усі особисті дані розділу «${name}». Спільні доходи, витрати й цілі не зачіпаються.`, () => {
+        state.personalIncomes = (state.personalIncomes || []).filter(x => x.owner !== k);
+        state.personalExpenses = (state.personalExpenses || []).filter(x => x.owner !== k);
+        ['personalGoals', 'personalFixed'].forEach(p => { if (state[p]) state[p][k] = []; });
+        ['personalCategories', 'personalCategoryLimits'].forEach(p => { if (state[p]) delete state[p][k]; });
+        if (state.settings.pins) delete state.settings.pins[k];
+        delete unlocked[k]; saveUnlocked();
+        saveToCloud(); renderAll();
+      }, 'Видалити й скинути', true);
+    }
+
+    function contributeGoal(id, k) {
+      const g = state.goals.find(x => x.id === id), inp = document.getElementById('gc-amt-' + id);
+      const amt = inp ? parseFloat(inp.value) : 0;
+      if (!g || !(amt > 0)) { showModal('Увага', 'Введіть суму внеску.'); return; }
+      g.current = Math.min(g.target, g.current + amt);
+      (g.history = g.history || []).push({ date: getTodayString(), partner: k === 'p1' ? getPartner1Name() : getPartner2Name(), amount: amt });
+      saveToCloud(); renderAll();
+    }
+
+    // Поле «Платить» для спільних регулярних платежів
+    function buildFixedPayerField() {
+      const sc = document.getElementById('fx-scope');
+      if (!sc || document.getElementById('fx-payer')) return;
+      const host = (sc.parentElement && sc.parentElement.querySelector('label')) ? sc.parentElement : sc;
+      host.insertAdjacentHTML('afterend', '<div><label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Платить (для спільних)</label><select id="fx-payer" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select></div>');
+    }
+    function updateFixedPayerOptions() {
+      const sel = document.getElementById('fx-payer');
+      if (!sel) return;
+      const cur = sel.value, p1 = getPartner1Name(), p2 = getPartner2Name();
+      sel.innerHTML = `<option value="${esc(p1)}">${getPartner1Avatar()} ${esc(p1)}</option><option value="${esc(p2)}">${getPartner2Avatar()} ${esc(p2)}</option>`;
+      sel.value = (cur === p1 || cur === p2) ? cur : p1;
+    }
+
+    
+window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('income-date').value = getTodayString();
+      document.getElementById('exp-date').value = getTodayString();
+      buildFixedPayerField();
+      buildPersonalShells();
+      buildPrivacySettings();
+      initPrivacy();
+      initSync();
+    });
+  </script>
+</body>
+</html>
+```
+
+Ось згенерований `index.html` файл, готовий до запуску або збереження!
