@@ -43,9 +43,13 @@
     @media (max-width: 640px) {
       body { padding-bottom: 72px; }
     }
- #nl-badge,
-.nl-badge {
+button#nl-badge, .nl-badge {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
 }
   </style>
 
