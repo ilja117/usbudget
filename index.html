@@ -2,8 +2,8 @@
 <html lang="uk" class="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UsBudget — Спільний бюджет пари · v3.1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>UsBudget — Спільний бюджет пари · v3.5</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -35,22 +35,24 @@
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
     .pp-locked > :not(.pp-lockbox) { display: none !important; }
     .custom-scrollbar::-webkit-scrollbar { height: 4px; width: 4px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 9999px; }
+    /* Мобільні відступи знизу для фіксованого бару */
+    @media (max-width: 640px) {
+      body { padding-bottom: 72px; }
+    }
   </style>
 
-  <!-- UsBudget v3.1: двигун тем (токени для світлої й темної теми) -->
+  <!-- UsBudget v3.5: двигун тем та святкові банери -->
   <style id="usbudget-theme-engine">
-    /* 1. Палітри місяців (світлі значення). Темні похідні рахуються автоматично нижче. */
     html[data-season="november"] { --p-page:#f7f1e7; --p-card:#fffdf8; --p-soft:#eee3d1; --p-border:#ddc7a7; --p-accent:#87552f; --p-ga:#6f4931; --p-gb:#c28a4b; }
     html[data-season="december"] { --p-page:#edf5f1; --p-card:#fbfffc; --p-soft:#deeee6; --p-border:#bdd8ca; --p-accent:#17644f; --p-ga:#155c49; --p-gb:#a63849; }
     html[data-season="january"]  { --p-page:#eef5fb; --p-card:#fcfeff; --p-soft:#e1edf7; --p-border:#c5d9e9; --p-accent:#356b9d; --p-ga:#356b9d; --p-gb:#8bbbd7; }
     html[data-season="february"] { --p-page:#fbf0f3; --p-card:#fffafb; --p-soft:#f4e1e8; --p-border:#e7c4d0; --p-accent:#a34467; --p-ga:#963b61; --p-gb:#d17d98; }
     html[data-season="march"]    { --p-page:#f1f6ed; --p-card:#fdfff9; --p-soft:#e5eedf; --p-border:#cadbc1; --p-accent:#52784e; --p-ga:#52784e; --p-gb:#c18b68; }
     html[data-season="april"]    { --p-page:#f4f0fa; --p-card:#fffefe; --p-soft:#ebe5f5; --p-border:#d7cde9; --p-accent:#71609b; --p-ga:#75619e; --p-gb:#8cb9a3; }
-
     html[data-season="may"]       { --p-page:#f6f8ef; --p-card:#fffffb; --p-soft:#e7efd6; --p-border:#cfdcb4; --p-accent:#357a42; --p-ga:#357a42; --p-gb:#e7a1b0; }
     html[data-season="june"]      { --p-page:#fcf9e6; --p-card:#fffef6; --p-soft:#f6f0c6; --p-border:#e8dea0; --p-accent:#9c6b00; --p-ga:#9c6b00; --p-gb:#f2c94c; }
     html[data-season="july"]      { --p-page:#eaf7f6; --p-card:#fbffff; --p-soft:#d5eeec; --p-border:#b3dbd7; --p-accent:#13808b; --p-ga:#13808b; --p-gb:#f08a6c; }
@@ -58,7 +60,16 @@
     html[data-season="september"] { --p-page:#f8f0e4; --p-card:#fffcf6; --p-soft:#f0e0c8; --p-border:#e0c9a4; --p-accent:#b4532a; --p-ga:#a8481f; --p-gb:#d9a441; }
     html[data-season="october"]   { --p-page:#f6eef0; --p-card:#fffafb; --p-soft:#ecdce2; --p-border:#dcc0cb; --p-accent:#7d3c58; --p-ga:#6e2f4d; --p-gb:#c9774b; }
 
-    /* 2. Токени режиму: світла тема */
+    html[data-moment="newyear"]    { --p-page:#eef3fb; --p-card:#fcfdff; --p-soft:#dde7f6; --p-border:#bccbe6; --p-accent:#2f4c8f; --p-ga:#2f4c8f; --p-gb:#d8b04a; }
+    html[data-moment="christmas"]  { --p-page:#f1f6f0; --p-card:#fbfffa; --p-soft:#e0eddc; --p-border:#bdd5b8; --p-accent:#1f6b3a; --p-ga:#1f6b3a; --p-gb:#b3262c; }
+    html[data-moment="valentine"]  { --p-page:#fdeef1; --p-card:#fffafb; --p-soft:#f9dbe3; --p-border:#efb9c8; --p-accent:#b8325a; --p-ga:#b8325a; --p-gb:#f08aa5; }
+    html[data-moment="womens"]     { --p-page:#fbf7e0; --p-card:#fffef4; --p-soft:#f6edb8; --p-border:#e6d78a; --p-accent:#7a4a9a; --p-ga:#7a4a9a; --p-gb:#f2cf3a; }
+    html[data-moment="easter"]     { --p-page:#fbf7ea; --p-card:#fffdf6; --p-soft:#f3ecd0; --p-border:#e4d6a4; --p-accent:#8c6a14; --p-ga:#8c6a14; --p-gb:#86b97a; }
+    html[data-moment="mother"]     { --p-page:#fdf2f5; --p-card:#fffbfc; --p-soft:#f8e0e8; --p-border:#ecbfce; --p-accent:#b04a76; --p-ga:#b04a76; --p-gb:#f0b0c0; }
+    html[data-moment="vyshyvanka"] { --p-page:#fbf6ee; --p-card:#fffdf9; --p-soft:#f2e6d6; --p-border:#e2cfb6; --p-accent:#b3262c; --p-ga:#b3262c; --p-gb:#2b2b2b; }
+    html[data-moment="flag"]       { --p-page:#f3f7fc; --p-card:#fdfeff; --p-soft:#e2edf9; --p-border:#c0d6ee; --p-accent:#1f5fa8; --p-ga:#1f5fa8; --p-gb:#f2c94c; }
+    html[data-moment="halloween"]  { --p-page:#f8f0e8; --p-card:#fffcf8; --p-soft:#f0e0cf; --p-border:#e0c3a5; --p-accent:#b4531a; --p-ga:#5b3a82; --p-gb:#e8892b; }
+    html[data-moment="party"]      { --p-page:#fff4e6; --p-card:#fffdf8; --p-soft:#fde4c4; --p-border:#f2c98f; --p-accent:#c2410c; --p-ga:#c2410c; --p-gb:#f5b83d; }
     html[data-season]:not(.dark) {
       color-scheme: light;
       --s-page: var(--p-page); --s-card: var(--p-card); --s-soft: var(--p-soft);
@@ -70,7 +81,6 @@
       --s-shadow: color-mix(in srgb, var(--p-accent) 22%, transparent);
       --s-card-shadow: 0 10px 28px rgba(35,48,71,.075), 0 2px 7px rgba(35,48,71,.045);
     }
-    /* Токени режиму: темна тема */
     html.dark[data-season] {
       color-scheme: dark;
       --s-page: color-mix(in srgb, var(--p-accent) 10%, #0d131d);
@@ -85,7 +95,6 @@
       --s-card-shadow: 0 10px 28px rgba(0,0,0,.35), 0 2px 7px rgba(0,0,0,.25);
     }
 
-    /* 3. Застосування токенів до утиліт Tailwind (однаково для обох режимів) */
     html[data-season] body[class] {
       background-color: var(--s-page) !important; color: var(--s-ink);
       background-image: radial-gradient(ellipse at 8% 4%, color-mix(in srgb, var(--p-ga) 14%, transparent), transparent 34rem),
@@ -105,7 +114,6 @@
     html.dark[data-season] :is(.text-slate-600, .text-slate-700, .text-slate-800, .text-slate-900) { color: var(--s-ink); }
     html[data-season] th { color: var(--s-ink); font-weight: 700; }
 
-    /* Акцент (замість рожевого) */
     html[data-season] .bg-pink-500 { background-color: var(--s-accent) !important; }
     html[data-season] [class~="hover:bg-pink-600"]:hover { background-color: var(--s-accent-hover) !important; }
     html[data-season] :is(.text-pink-500, .text-pink-600) { color: var(--s-accent-text) !important; }
@@ -115,21 +123,25 @@
     html[data-season] [class*="ring-pink-"] { --tw-ring-color: var(--s-accent) !important; }
     html[data-season] [class*="from-pink-"] { --tw-gradient-from: var(--s-ga) !important; --tw-gradient-to: var(--s-gb) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
 
-    /* Шапка, вкладки, поля */
     html[data-season] header[class] { background-color: color-mix(in srgb, var(--s-card) 90%, transparent) !important; border-bottom-color: var(--s-border) !important; backdrop-filter: blur(16px); }
-    html[data-season] .tab-btn { border-radius: 999px !important; transition: background .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease; }
+    html[data-season] .tab-btn { border-radius: 99px !important; transition: background .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease; }
     html[data-season] .tab-btn:hover { transform: translateY(-1px); }
     html[data-season] .tab-btn.bg-pink-500 {
       background: linear-gradient(135deg, var(--s-ga), color-mix(in srgb, var(--s-ga) 55%, var(--s-gb))) !important;
       color: #fff !important; box-shadow: 0 7px 18px var(--s-shadow) !important;
     }
     html[data-season] :is(input, select, textarea)[class] { background-color: var(--s-input) !important; color: var(--s-ink) !important; border-color: var(--s-border) !important; border-radius: 11px; }
+    html[data-season] div[class*="bg-white/95"] { background-color: color-mix(in srgb, var(--s-card) 94%, transparent) !important; border-top-color: var(--s-border) !important; }
+    @media (max-width: 640px) {
+      html[data-season] :is(input:not([type="color"]):not([type="checkbox"]), select)[class] { min-height: 44px; }
+      div[class*="bg-white/95"] { padding-bottom: calc(.375rem + env(safe-area-inset-bottom, 0px)); }
+      body { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+    }
     html[data-season] input::placeholder, html[data-season] textarea::placeholder { color: var(--s-muted); opacity: .8; }
     html[data-season] :is(input, select, textarea):focus { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--s-accent) 22%, transparent) !important; }
     html[data-season] .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--s-accent); }
     html[data-season] ::selection { color: #fff; background: var(--s-accent); }
 
-    /* Темна тема: напівпрозорі бейджі та кольорові суми */
     html.dark[data-season] .bg-emerald-100 { background-color: color-mix(in srgb, #10b981 22%, transparent) !important; color: #6ee7b7 !important; }
     html.dark[data-season] .bg-rose-100    { background-color: color-mix(in srgb, #f43f5e 22%, transparent) !important; color: #fda4af !important; }
     html.dark[data-season] .bg-amber-100   { background-color: color-mix(in srgb, #f59e0b 22%, transparent) !important; color: #fcd34d !important; }
@@ -168,7 +180,6 @@
         function c(v) { return Math.round(v + (255 - v) * f); }
         return '#' + ((1 << 24) + (c(r) << 16) + (c(g) << 8) + c(b)).toString(16).slice(1);
       }
-      // Кольори діаграм: перші два з теми, решта — стандартні, щоб категорії лишались різними
       window.usbChartColors = function () {
         var t = current();
         if (!t) return BASE;
@@ -200,7 +211,7 @@
           { id: 'off', label: '⚪ Без сезонності', sub: 'стандартна тема' }
         ].concat(THEMES.map(function (t) { return { id: t.id, label: t.emoji + ' ' + t.name, sub: '', sw: [t.a, t.b] }; }));
         host.innerHTML = items.map(function (it) {
-          return '<button type="button" onclick="setThemePref(\'' + it.id + '\')" class="text-left p-3 rounded-xl border text-xs font-semibold transition bg-slate-50 dark:bg-slate-900/40 hover:opacity-90' + (it.id === p ? ' ring-2 ring-pink-500' : '') + '">'
+          return '<button type="button" onclick="setThemePref(\'' + it.id + '\')" class="text-left p-3 rounded-xl border text-xs font-semibold transition bg-slate-50 dark:bg-slate-900/40 hover:opacity-90 min-h-[44px]' + (it.id === p ? ' ring-2 ring-pink-500' : '') + '">'
             + '<span class="flex items-center gap-2">' + (it.sw ? '<span class="inline-block w-3.5 h-3.5 rounded-full shrink-0" style="background:linear-gradient(135deg,' + it.sw[0] + ',' + it.sw[1] + ')"></span>' : '') + it.label + '</span>'
             + (it.sub ? '<span class="block mt-0.5 font-normal text-slate-500">' + it.sub + '</span>' : '') + '</button>';
         }).join('');
@@ -218,34 +229,34 @@
   <header class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700/60 sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div id="app-logo" class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-pink-500/20">
+        <div id="app-logo" class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-pink-500/20 shrink-0">
           💕
         </div>
         <div>
-          <h1 class="text-lg font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 class="text-base sm:text-lg font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
             UsBudget
           </h1>
-          <p class="text-xs text-slate-500 dark:text-slate-400"><span id="app-subtitle">Фінансовий хаб для пари</span> · v3.1</p>
+          <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400"><span id="app-subtitle">Фінансовий хаб для пари</span> · v3.5</p>
         </div>
       </div>
       
-      <div class="flex items-center space-x-3">
-        <div id="sync-status" class="text-xs px-3 py-1.5 rounded-full font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-          <span>Підключення...</span>
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <div id="sync-status" class="text-[11px] sm:text-xs px-2.5 py-1.5 rounded-full font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+          <span class="hidden sm:inline">Підключення...</span>
         </div>
-        <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition" title="Змінити тему">
+        <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition" title="Змінити тему">
           <span id="theme-icon" class="text-base">🌙</span>
         </button>
-        <button onclick="switchTab('settings')" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition" title="Налаштування">
+        <button onclick="switchTab('settings')" class="w-10 h-10 sm:hidden flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition" title="Налаштування">
           <span class="text-base">⚙️</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Навігація вкладок -->
-  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 w-full">
+  <!-- Навігація вкладок (Десктоп / Планшет) -->
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-6 w-full hidden sm:block">
     <div class="flex space-x-2 border-b border-slate-200 dark:border-slate-700/60 pb-3 overflow-x-auto custom-scrollbar">
       <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-pink-500 text-white shadow-md shadow-pink-500/20">
         <span>📊</span> Дашборд
@@ -273,81 +284,125 @@
     </div>
   </nav>
 
+  <!-- Мобільна нижня панель навігації (Bottom Bar v3.5) -->
+  <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-700/60 px-2 py-1.5 sm:hidden flex justify-around items-center shadow-lg">
+    <button onclick="switchTab('dashboard')" id="mob-btn-dashboard" class="mobile-tab-btn flex flex-col items-center justify-center py-1 px-2 text-pink-500">
+      <span class="text-xl">📊</span>
+      <span class="text-[10px] font-semibold mt-0.5">Дашборд</span>
+    </button>
+    <button onclick="switchTab('incomes')" id="mob-btn-incomes" class="mobile-tab-btn flex flex-col items-center justify-center py-1 px-2 text-slate-500 dark:text-slate-400">
+      <span class="text-xl">💰</span>
+      <span class="text-[10px] font-medium mt-0.5">Доходи</span>
+    </button>
+    <button onclick="switchTab('expenses')" id="mob-btn-expenses" class="mobile-tab-btn flex flex-col items-center justify-center py-1 px-2 text-slate-500 dark:text-slate-400">
+      <span class="text-xl">🛒</span>
+      <span class="text-[10px] font-medium mt-0.5">Витрати</span>
+    </button>
+    <button onclick="switchTab('goals')" id="mob-btn-goals" class="mobile-tab-btn flex flex-col items-center justify-center py-1 px-2 text-slate-500 dark:text-slate-400">
+      <span class="text-xl">🎯</span>
+      <span class="text-[10px] font-medium mt-0.5">Цілі</span>
+    </button>
+    <button onclick="openMoreMenu()" id="mob-btn-more" class="mobile-tab-btn flex flex-col items-center justify-center py-1 px-2 text-slate-500 dark:text-slate-400">
+      <span class="text-xl">📑</span>
+      <span class="text-[10px] font-medium mt-0.5">Меню</span>
+    </button>
+  </div>
+
+  <!-- Модальне меню "Ще" для мобільних -->
+  <div id="mob-more-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-end justify-center hidden opacity-0 transition-opacity duration-200 sm:hidden">
+    <div class="bg-white dark:bg-slate-800 p-5 rounded-t-3xl border-t border-slate-200 dark:border-slate-700 w-full max-w-lg space-y-3 transform translate-y-full transition-transform duration-200" id="mob-more-box">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-700">
+        <h3 class="font-bold text-base">Всі розділи</h3>
+        <button onclick="closeMoreMenu()" class="text-slate-400 p-1 text-lg">✕</button>
+      </div>
+      <div class="grid grid-cols-2 gap-2.5 py-2">
+        <button onclick="closeMoreMenu(); switchTab('fixed')" class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40 text-left text-xs font-semibold flex items-center gap-2.5"><span>🔄</span> Регулярні платежі</button>
+        <button onclick="closeMoreMenu(); switchTab('settlement')" class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40 text-left text-xs font-semibold flex items-center gap-2.5"><span>⚖️</span> Взаєморозрахунки</button>
+        <button onclick="closeMoreMenu(); switchTab('p1')" id="mob-more-p1" class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40 text-left text-xs font-semibold flex items-center gap-2.5">👩 Партнер 1</button>
+        <button onclick="closeMoreMenu(); switchTab('p2')" id="mob-more-p2" class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40 text-left text-xs font-semibold flex items-center gap-2.5">👨 Партнер 2</button>
+        <button onclick="closeMoreMenu(); switchTab('settings')" class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40 text-left text-xs font-semibold flex items-center gap-2.5 col-span-2"><span>⚙️</span> Налаштування</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Основний контент -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full space-y-4 sm:space-y-6">
+
+    <!-- Святковий банер (v3.5) -->
+    <div id="holiday-banner-container"></div>
 
     <!-- Глобальний селектор періоду -->
-    <div class="bg-white dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="bg-white dark:bg-slate-800/80 p-3.5 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
       <div class="flex items-center gap-2 w-full sm:w-auto">
-        <button onclick="setPeriodType('month')" id="period-btn-month" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition bg-pink-500 text-white shadow-sm">Календарний місяць</button>
-        <button onclick="setPeriodType('week')" id="period-btn-week" class="flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Тиждень</button>
+        <button onclick="setPeriodType('month')" id="period-btn-month" class="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold transition bg-pink-500 text-white shadow-sm min-h-[40px]">Календарний місяць</button>
+        <button onclick="setPeriodType('week')" id="period-btn-week" class="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 min-h-[40px]">Тиждень</button>
       </div>
-      <div class="flex items-center gap-3">
-        <button onclick="shiftPeriod(-1)" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition" title="Попередній період">◀</button>
-        <span id="period-label" class="text-sm font-bold text-slate-900 dark:text-white min-w-[160px] text-center">Лютий 2026</span>
-        <button onclick="shiftPeriod(1)" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition" title="Наступний період">▶</button>
+      <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+        <button onclick="shiftPeriod(-1)" class="w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition" title="Попередній період">◀</button>
+        <span id="period-label" class="text-sm font-bold text-slate-900 dark:text-white min-w-[150px] text-center">Лютий 2026</span>
+        <button onclick="shiftPeriod(1)" class="w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 text-slate-600 dark:text-slate-300 transition" title="Наступний період">▶</button>
       </div>
     </div>
 
     <!-- TAB 1: ДАШБОРД -->
-    <section id="tab-dashboard" class="tab-content space-y-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
-          <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 text-xs font-medium">
-            <span>Загальний дохід (період)</span>
-            <span class="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg">📈</span>
+    <section id="tab-dashboard" class="tab-content space-y-4 sm:space-y-6">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+          <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 text-[11px] sm:text-xs font-medium">
+            <span>Дохід (період)</span>
+            <span class="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg hidden sm:inline">📈</span>
           </div>
-          <h3 id="kpi-income" class="text-2xl font-bold mt-2 text-slate-900 dark:text-white">0 ₴</h3>
+          <h3 id="kpi-income" class="text-lg sm:text-2xl font-bold mt-1.5 sm:mt-2 text-slate-900 dark:text-white">0 ₴</h3>
         </div>
 
-        <div class="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
-          <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 text-xs font-medium">
-            <span>Загальні витрати (період)</span>
-            <span class="p-1.5 bg-rose-50 text-rose-600 rounded-lg">📉</span>
+        <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+          <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 text-[11px] sm:text-xs font-medium">
+            <span>Витрати (період)</span>
+            <span class="p-1.5 bg-rose-50 text-rose-600 rounded-lg hidden sm:inline">📉</span>
           </div>
-          <h3 id="kpi-expenses" class="text-2xl font-bold mt-2 text-slate-900 dark:text-white">0 ₴</h3>
+          <h3 id="kpi-expenses" class="text-lg sm:text-2xl font-bold mt-1.5 sm:mt-2 text-slate-900 dark:text-white">0 ₴</h3>
         </div>
 
-        <div class="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
-          <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 text-xs font-medium">
-            <span>Чисті заощадження</span>
-            <span class="p-1.5 bg-blue-50 text-blue-600 rounded-lg">💎</span>
+        <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+          <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 text-[11px] sm:text-xs font-medium">
+            <span>Заощадження</span>
+            <span class="p-1.5 bg-blue-50 text-blue-600 rounded-lg hidden sm:inline">💎</span>
           </div>
-          <h3 id="kpi-savings" class="text-2xl font-bold mt-2 text-emerald-600">0 ₴</h3>
+          <h3 id="kpi-savings" class="text-lg sm:text-2xl font-bold mt-1.5 sm:mt-2 text-emerald-600">0 ₴</h3>
         </div>
 
-        <div class="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
-          <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 text-xs font-medium">
+        <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+          <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 text-[11px] sm:text-xs font-medium">
             <span>Норма заощаджень</span>
-            <span class="p-1.5 bg-pink-50 text-pink-600 rounded-lg">📊</span>
+            <span class="p-1.5 bg-pink-50 text-pink-600 rounded-lg hidden sm:inline">📊</span>
           </div>
-          <h3 id="kpi-savings-rate" class="text-2xl font-bold mt-2 text-pink-600">0%</h3>
+          <h3 id="kpi-savings-rate" class="text-lg sm:text-2xl font-bold mt-1.5 sm:mt-2 text-pink-600">0%</h3>
         </div>
       </div>
 
       <!-- Блок Контроль лімітів -->
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
-        <h3 class="font-bold text-base flex items-center gap-2">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-3 sm:space-y-4">
+        <h3 class="font-bold text-sm sm:text-base flex items-center gap-2">
           <span>🎯</span> Контроль лімітів за категоріями (План / Факт)
         </h3>
-        <div id="dashboard-limits-container" class="space-y-3"></div>
+        <div id="dashboard-limits-container" class="space-y-2.5 sm:space-y-3"></div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
-          <h3 class="font-bold text-base mb-4 flex items-center gap-2">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+          <h3 class="font-bold text-sm sm:text-base mb-3 sm:mb-4 flex items-center gap-2">
             <span>🍰</span> Структура витрат за категоріями
           </h3>
-          <div class="relative h-64 flex items-center justify-center">
+          <div class="relative h-56 sm:h-64 flex items-center justify-center">
             <canvas id="expenseCategoryChart"></canvas>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
-          <h3 class="font-bold text-base mb-4 flex items-center gap-2">
+        <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+          <h3 class="font-bold text-sm sm:text-base mb-3 sm:mb-4 flex items-center gap-2">
             <span>👥</span> Частки доходів партнерів
           </h3>
-          <div class="relative h-64 flex items-center justify-center">
+          <div class="relative h-56 sm:h-64 flex items-center justify-center">
             <canvas id="partnerContributionChart"></canvas>
           </div>
         </div>
@@ -355,37 +410,40 @@
     </section>
 
     <!-- TAB 2: ДОХОДИ -->
-    <section id="tab-incomes" class="tab-content hidden space-y-6">
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
-        <h3 class="text-lg font-bold mb-4">Додати дохід</h3>
-        <form id="income-form" onsubmit="addIncome(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-4">
+    <section id="tab-incomes" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-base sm:text-lg font-bold mb-3 sm:mb-4">Додати дохід</h3>
+        <form id="income-form" onsubmit="addIncome(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-3 sm:gap-4">
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Дата</label>
-            <input type="date" id="income-date" required class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <input type="date" id="income-date" required class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Отримувач</label>
-            <select id="income-partner" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
+            <select id="income-partner" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Джерело</label>
-            <input type="text" id="income-source" required placeholder="Напр: Зарплата" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <input type="text" id="income-source" required placeholder="Напр: Зарплата" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Сума (<span class="currency-symbol">₴</span>)</label>
-            <input type="number" id="income-amount" min="1" required placeholder="40000" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <input type="number" id="income-amount" min="1" required placeholder="40000" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
           </div>
-          <div class="flex items-end">
-            <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition">
+          <div class="flex items-end pt-1 sm:pt-0">
+            <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 sm:py-2.5 px-4 rounded-xl text-sm transition min-h-[48px] sm:min-h-[40px]">
               + Додати дохід
             </button>
           </div>
         </form>
       </div>
 
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
-        <h3 class="text-lg font-bold mb-4">Список доходів</h3>
-        <div class="overflow-x-auto custom-scrollbar">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-base sm:text-lg font-bold mb-3 sm:mb-4">Список доходів</h3>
+        <!-- Мобільний список карток -->
+        <div id="incomes-mobile-list" class="space-y-2.5 sm:hidden"></div>
+        <!-- Десктопна таблиця -->
+        <div class="hidden sm:block overflow-x-auto custom-scrollbar">
           <table class="w-full text-left text-sm">
             <thead>
               <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500">
@@ -403,51 +461,54 @@
     </section>
 
     <!-- TAB 3: ВИТРАТИ ТА ЛІМІТИ -->
-    <section id="tab-expenses" class="tab-content hidden space-y-6">
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
-        <h3 class="text-lg font-bold mb-4">Додати витрату</h3>
-        <form id="expense-form" onsubmit="addExpense(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <section id="tab-expenses" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-base sm:text-lg font-bold mb-3 sm:mb-4">Додати витрату</h3>
+        <form id="expense-form" onsubmit="addExpense(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Дата</label>
-            <input type="date" id="exp-date" required class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <input type="date" id="exp-date" required class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Назва витрати</label>
-            <input type="text" id="exp-title" required placeholder="Продукти..." class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <input type="text" id="exp-title" required placeholder="Продукти..." class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Сума (<span class="currency-symbol">₴</span>)</label>
-            <input type="number" id="exp-amount" min="1" required placeholder="1500" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <input type="number" id="exp-amount" min="1" required placeholder="1500" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Категорія</label>
-            <select id="exp-category" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
+            <select id="exp-category" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Хто сплатив</label>
-            <select id="exp-payer" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
+            <select id="exp-payer" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Правило розподілу</label>
-            <select id="exp-split" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
+            <select id="exp-split" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
           </div>
-          <div class="sm:col-span-2 lg:col-span-3 flex justify-end">
-            <button type="submit" class="w-full sm:w-auto bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-6 rounded-xl text-sm transition">
+          <div class="sm:col-span-2 lg:col-span-3 flex justify-end pt-1">
+            <button type="submit" class="w-full sm:w-auto bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 sm:py-2.5 px-6 rounded-xl text-sm transition min-h-[48px] sm:min-h-[40px]">
               + Додати витрату
             </button>
           </div>
         </form>
       </div>
 
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
-        <h3 class="text-lg font-bold">⚙️ Встановлення лімітів на категорії (місяць)</h3>
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-3 sm:space-y-4">
+        <h3 class="text-base sm:text-lg font-bold">⚙️ Ліміти на категорії (місяць)</h3>
         <p class="text-xs text-slate-500">Вкажіть максимальну суму витрат для кожної категорії.</p>
-        <div id="category-limits-editor" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2"></div>
+        <div id="category-limits-editor" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-1"></div>
       </div>
 
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
-        <h3 class="text-lg font-bold mb-4">Історія витрат</h3>
-        <div class="overflow-x-auto custom-scrollbar">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-base sm:text-lg font-bold mb-3 sm:mb-4">Історія витрат</h3>
+        <!-- Мобільні картки витрат -->
+        <div id="expenses-mobile-list" class="space-y-2.5 sm:hidden"></div>
+        <!-- Десктопна таблиця -->
+        <div class="hidden sm:block overflow-x-auto custom-scrollbar">
           <table class="w-full text-left text-sm">
             <thead>
               <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500">
@@ -467,57 +528,60 @@
     </section>
 
     <!-- TAB: РЕГУЛЯРНІ ПЛАТЕЖІ -->
-    <section id="tab-fixed" class="tab-content hidden space-y-6">
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
+    <section id="tab-fixed" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
         <div>
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"><span>🔄</span> Регулярні та фіксовані платежі</h3>
-          <p class="text-xs text-slate-500 mt-0.5">Кредити, інвестиції, підписки, зал тощо.</p>
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"><span>🔄</span> Регулярні платежі</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Кредити, підписки, зал тощо.</p>
         </div>
 
-        <form id="fixed-expense-form" onsubmit="addFixedExpense(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+        <form id="fixed-expense-form" onsubmit="addFixedExpense(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-1">
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600">Назва</label>
-            <input type="text" id="fx-title" required placeholder="Кредит, зал..." class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <input type="text" id="fx-title" required placeholder="Кредит, зал..." class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600">Сума (<span class="currency-symbol">₴</span>)</label>
-            <input type="number" id="fx-amount" min="1" required placeholder="2500" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <input type="number" id="fx-amount" min="1" required placeholder="2500" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600">Частота</label>
-            <select id="fx-frequency" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <select id="fx-frequency" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
               <option value="month">Щомісяця</option><option value="week">Щотижня</option><option value="quarter">Щокварталу</option><option value="year">Щороку</option>
             </select>
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600">Тип</label>
-            <select id="fx-type" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <select id="fx-type" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
               <option value="expense">📉 Витрата</option><option value="savings">💎 Накопичення</option><option value="debt">💳 Борг / Кредит</option>
             </select>
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600">Категорія</label>
-            <select id="fx-category" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
+            <select id="fx-category" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select>
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600">Хто сплачує</label>
-            <select id="fx-scope" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <select id="fx-scope" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
               <option value="shared">👥 Спільний</option><option value="p1">👩 Партнер 1</option><option value="p2">👨 Партнер 2</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-medium mb-1.5 text-slate-600">Кінцева дата (опціонально)</label>
-            <input type="date" id="fx-end-date" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Кінцева дата (опц.)</label>
+            <input type="date" id="fx-end-date" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
           </div>
-          <div class="flex items-end">
-            <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition">+ Додати шаблон</button>
+          <div class="flex items-end pt-1">
+            <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 sm:py-2.5 px-4 rounded-xl text-sm transition min-h-[48px] sm:min-h-[40px]">+ Додати шаблон</button>
           </div>
         </form>
       </div>
 
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
-        <h3 class="text-lg font-bold mb-4">Активні регулярні платежі</h3>
-        <div class="overflow-x-auto custom-scrollbar">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-base sm:text-lg font-bold mb-3 sm:mb-4">Активні регулярні платежі</h3>
+        <!-- Мобільні картки регулярних -->
+        <div id="fixed-mobile-list" class="space-y-2.5 sm:hidden"></div>
+        <!-- Десктопна таблиця -->
+        <div class="hidden sm:block overflow-x-auto custom-scrollbar">
           <table class="w-full text-left text-sm">
             <thead>
               <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500">
@@ -536,55 +600,59 @@
     </section>
 
     <!-- TAB: ВЗАЄМОРОЗРАХУНКИ -->
-    <section id="tab-settlement" class="tab-content hidden space-y-6">
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
-        <h3 class="text-lg font-bold mb-2">⚖️ Взаєморозрахунки між партнерами</h3>
-        <p class="text-sm text-slate-500 mb-6">Калькулятор враховує спільні витрати за період згідно з правилами розподілу.</p>
-        <div id="settlement-box" class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border flex flex-col md:flex-row items-center justify-between gap-4">
+    <section id="tab-settlement" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-base sm:text-lg font-bold mb-2">⚖️ Взаєморозрахунки між партнерами</h3>
+        <p class="text-xs sm:text-sm text-slate-500 mb-5">Калькулятор враховує спільні витрати згідно з правилами розподілу.</p>
+        <div id="settlement-box" class="p-4 sm:p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <span id="settlement-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Баланс врегульовано</span>
-            <h4 id="settlement-text" class="text-xl font-bold mt-2 text-slate-900 dark:text-white">Ніхто нікому не винен</h4>
+            <h4 id="settlement-text" class="text-lg sm:text-xl font-bold mt-2 text-slate-900 dark:text-white">Ніхто нікому не винен</h4>
             <p id="settlement-details" class="text-xs text-slate-500 mt-1">Усі спільні витрати розподілено рівномірно.</p>
           </div>
-          <button onclick="confirmSettlement()" class="w-full md:w-auto bg-pink-500 hover:bg-pink-600 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition">Підтвердити розрахунок</button>
+          <button onclick="confirmSettlement()" class="w-full md:w-auto bg-pink-500 hover:bg-pink-600 text-white font-medium px-5 py-3 sm:py-2.5 rounded-xl text-sm transition min-h-[48px] sm:min-h-[40px]">Підтвердити розрахунок</button>
         </div>
+      </div>
+    <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs">
+        <h3 class="text-base sm:text-lg font-bold mb-3">🧾 Історія розрахунків</h3>
+        <div id="settlement-history"></div>
       </div>
     </section>
 
-    <!-- ОСОБИСТІ БЮДЖЕТИ ПАРТНЕРІВ (v3.1) -->
-    <section id="tab-p1" class="tab-content hidden space-y-6"></section>
-    <section id="tab-p2" class="tab-content hidden space-y-6"></section>
+    <!-- ОСОБИСТІ БЮДЖЕТИ ПАРТНЕРІВ -->
+    <section id="tab-p1" class="tab-content hidden space-y-4 sm:space-y-6"></section>
+    <section id="tab-p2" class="tab-content hidden space-y-4 sm:space-y-6"></section>
 
     <!-- TAB: ЦІЛІ -->
-    <section id="tab-goals" class="tab-content hidden space-y-6">
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
+    <section id="tab-goals" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
         <div>
-          <h3 class="text-lg font-bold">🎯 Створити ціль накопичення</h3>
-          <p class="text-xs text-slate-500">Встановлюйте спільні цілі або особисті накопичення з можливістю відстежувати внески кожного.</p>
+          <h3 class="text-base sm:text-lg font-bold">🎯 Створити ціль накопичення</h3>
+          <p class="text-xs text-slate-500">Встановлюйте спільні цілі або особисті скарбнички.</p>
         </div>
-        <form id="goal-form" onsubmit="addGoal(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <form id="goal-form" onsubmit="addGoal(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600">Назва цілі</label>
-            <input type="text" id="goal-title" required placeholder="Відпустка..." class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <input type="text" id="goal-title" required placeholder="Відпустка..." class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600">Цільова сума (<span class="currency-symbol">₴</span>)</label>
-            <input type="number" id="goal-target" min="1" required placeholder="50000" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <input type="number" id="goal-target" min="1" required placeholder="50000" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
           </div>
           <div>
             <label class="block text-xs font-medium mb-1.5 text-slate-600">Тип та власник цілі</label>
-            <select id="goal-scope" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <select id="goal-scope" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
               <option value="shared">👥 Спільна ціль</option>
               <option value="p1">👩 Особиста (Партнер 1)</option>
               <option value="p2">👨 Особиста (Партнер 2)</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-medium mb-1.5 text-slate-600">Цільова дата (опціонально)</label>
-            <input type="date" id="goal-deadline" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+            <label class="block text-xs font-medium mb-1.5 text-slate-600">Цільова дата (опц.)</label>
+            <input type="date" id="goal-deadline" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
           </div>
-          <div class="sm:col-span-2 lg:col-span-4 flex justify-end">
-            <button type="submit" class="w-full sm:w-auto bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-6 rounded-xl text-sm transition">+ Створити ціль</button>
+          <div class="sm:col-span-2 lg:col-span-4 flex justify-end pt-1">
+            <button type="submit" class="w-full sm:w-auto bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 sm:py-2.5 px-6 rounded-xl text-sm transition min-h-[48px] sm:min-h-[40px]">+ Створити ціль</button>
           </div>
         </form>
       </div>
@@ -593,137 +661,159 @@
     </section>
 
     <!-- TAB: НАЛАШТУВАННЯ -->
-    <section id="tab-settings" class="tab-content hidden space-y-6">
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <section id="tab-settings" class="tab-content hidden space-y-4 sm:space-y-6">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div class="flex items-center gap-2">
             <span class="text-2xl">⚙️</span>
-            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Налаштування пари та бюджету</h2>
+            <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Налаштування пари та бюджету</h2>
           </div>
           <p class="text-xs text-slate-500 mt-1">Керуйте іменами партнерів, валютою та категоріями</p>
         </div>
-        <div id="couple-preview-badge" class="px-4 py-2.5 rounded-xl bg-pink-50 dark:bg-pink-950/40 text-pink-700 border border-pink-200 text-sm font-semibold flex items-center gap-3">
+        <div id="couple-preview-badge" class="px-4 py-2.5 rounded-xl bg-pink-50 dark:bg-pink-950/40 text-pink-700 border border-pink-200 text-sm font-semibold flex items-center justify-center gap-3">
           <span id="preview-p1">👩 Партнер 1</span><span class="text-rose-500">❤️</span><span id="preview-p2">👨 Партнер 2</span>
         </div>
       </div>
 
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
-        <h3 class="text-lg font-bold flex items-center gap-2"><span>👥</span> Персоналізація партнерів</h3>
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
+        <h3 class="text-base sm:text-lg font-bold flex items-center gap-2"><span>👥</span> Персоналізація партнерів</h3>
         <form id="settings-partners-form" onsubmit="savePartnerSettings(event)" class="space-y-5">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="p-5 rounded-2xl border border-pink-200 bg-pink-50/40 dark:bg-pink-950/20 space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div class="p-4 sm:p-5 rounded-2xl border border-pink-200 bg-pink-50/40 dark:bg-pink-950/20 space-y-3.5">
               <div class="flex justify-between items-center border-b pb-3">
                 <span class="text-xs font-bold uppercase text-pink-600">Перший партнер</span>
                 <span id="p1-card-avatar" class="text-2xl">👩</span>
               </div>
               <div>
                 <label class="block text-xs font-medium mb-1.5">Ім'я</label>
-                <input type="text" id="settings-p1-name" required class="w-full p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm font-medium">
+                <input type="text" id="settings-p1-name" required class="w-full p-3 sm:p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm font-medium">
               </div>
               <div>
                 <label class="block text-xs font-medium mb-1.5">Аватар</label>
-                <select id="settings-p1-avatar" onchange="updateSettingsPreviews()" class="w-full p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm">
+                <select id="settings-p1-avatar" onchange="updateSettingsPreviews()" class="w-full p-3 sm:p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm">
                   <option value="👩">👩 Дівчина</option><option value="👧">👧 Дівчинка</option><option value="👱‍♀️">👱‍♀️ Світле волосся</option><option value="👩‍🦰">👩‍🦰 Руде волосся</option><option value="👩‍💻">👩‍💻 Айтівниця</option><option value="👸">👸 Принцеса</option><option value="💕">💕 Серденько</option><option value="🌸">🌸 Квітка</option>
                 </select>
               </div>
               <div>
+                <label class="block text-xs font-medium mb-1.5">День народження</label>
+                <input type="date" id="settings-p1-bday" class="w-full p-3 sm:p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm">
+              </div>
+              <div>
                 <label class="block text-xs font-medium mb-1.5">Колір</label>
-                <input type="color" id="settings-p1-color" value="#ec4899" class="w-10 h-10 rounded-xl border-0 cursor-pointer bg-transparent">
+                <input type="color" id="settings-p1-color" value="#ec4899" class="w-12 h-11 rounded-xl border-0 cursor-pointer bg-transparent">
               </div>
             </div>
 
-            <div class="p-5 rounded-2xl border border-blue-200 bg-blue-50/40 dark:bg-blue-950/20 space-y-4">
+            <div class="p-4 sm:p-5 rounded-2xl border border-blue-200 bg-blue-50/40 dark:bg-blue-950/20 space-y-3.5">
               <div class="flex justify-between items-center border-b pb-3">
                 <span class="text-xs font-bold uppercase text-blue-600">Другий партнер</span>
                 <span id="p2-card-avatar" class="text-2xl">👨</span>
               </div>
               <div>
                 <label class="block text-xs font-medium mb-1.5">Ім'я</label>
-                <input type="text" id="settings-p2-name" required class="w-full p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm font-medium">
+                <input type="text" id="settings-p2-name" required class="w-full p-3 sm:p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm font-medium">
               </div>
               <div>
                 <label class="block text-xs font-medium mb-1.5">Аватар</label>
-                <select id="settings-p2-avatar" onchange="updateSettingsPreviews()" class="w-full p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm">
+                <select id="settings-p2-avatar" onchange="updateSettingsPreviews()" class="w-full p-3 sm:p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm">
                   <option value="👨">👨 Хлопець</option><option value="👦">👦 Юнак</option><option value="👱‍♂️">👱‍♂️ Світле волосся</option><option value="🧔">🧔 З бородою</option><option value="👨‍💻">👨‍💻 Айтівець</option><option value="🤴">🤴 Принц</option><option value="🚀">🚀 Ракета</option><option value="🌟">🌟 Зірка</option>
                 </select>
               </div>
               <div>
+                <label class="block text-xs font-medium mb-1.5">День народження</label>
+                <input type="date" id="settings-p2-bday" class="w-full p-3 sm:p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm">
+              </div>
+              <div>
                 <label class="block text-xs font-medium mb-1.5">Колір</label>
-                <input type="color" id="settings-p2-color" value="#3b82f6" class="w-10 h-10 rounded-xl border-0 cursor-pointer bg-transparent">
+                <input type="color" id="settings-p2-color" value="#3b82f6" class="w-12 h-11 rounded-xl border-0 cursor-pointer bg-transparent">
               </div>
             </div>
           </div>
+
+          <div class="p-4 sm:p-5 rounded-2xl border bg-slate-50 dark:bg-slate-900/40 space-y-3">
+            <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300">Дата річниці пари</label>
+            <input type="date" id="settings-anniversary" class="w-full sm:w-1/2 p-3 sm:p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-sm">
+          </div>
+
           <div class="flex justify-end">
-            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-6 rounded-xl text-sm transition">💾 Зберегти профілі</button>
+            <button type="submit" class="w-full sm:w-auto bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 sm:py-2.5 px-6 rounded-xl text-sm transition min-h-[48px] sm:min-h-[40px]">💾 Зберегти профілі та дати</button>
           </div>
         </form>
       </div>
 
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
-        <h3 class="text-lg font-bold flex items-center gap-2"><span>💵</span> Фінансові параметри</h3>
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
+        <h3 class="text-base sm:text-lg font-bold flex items-center gap-2"><span>💵</span> Фінансові параметри</h3>
         <form id="settings-finance-form" onsubmit="saveFinanceSettings(event)" class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label class="block text-xs font-medium mb-1.5">Валюта</label>
-              <select id="settings-currency" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+              <select id="settings-currency" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
                 <option value="₴">₴ (UAH)</option><option value="$">$ (USD)</option><option value="€">€ (EUR)</option><option value="zł">zł (PLN)</option>
               </select>
             </div>
             <div>
               <label class="block text-xs font-medium mb-1.5">Розподіл за замовчуванням</label>
-              <select id="settings-default-split" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+              <select id="settings-default-split" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
                 <option value="50-50">50 / 50 (Порівну)</option><option value="proportional">Пропорційно доходу</option>
               </select>
             </div>
           </div>
           <div class="flex justify-end">
-            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-6 rounded-xl text-sm transition">💾 Зберегти параметри</button>
+            <button type="submit" class="w-full sm:w-auto bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 sm:py-2.5 px-6 rounded-xl text-sm transition min-h-[48px] sm:min-h-[40px]">💾 Зберегти параметри</button>
           </div>
         </form>
       </div>
 
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
         <div class="flex justify-between items-center">
-          <h3 class="text-lg font-bold">🏷️ Категорії витрат</h3>
+          <h3 class="text-base sm:text-lg font-bold">🏷️ Категорії витрат</h3>
           <button onclick="resetCategoriesToDefault()" class="text-xs text-pink-600 hover:underline">Відновити типові</button>
         </div>
-        <form onsubmit="addCategory(event)" class="flex gap-3">
-          <input type="text" id="new-category-input" required placeholder="Нова категорія..." class="flex-1 p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
-          <button type="submit" class="bg-slate-800 text-white font-medium py-2.5 px-5 rounded-xl text-sm">+ Додати</button>
+        <form onsubmit="addCategory(event)" class="flex gap-2.5">
+          <input type="text" id="new-category-input" required placeholder="Нова категорія..." class="flex-1 p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm">
+          <button type="submit" class="bg-slate-800 text-white font-medium py-3 sm:py-2.5 px-5 rounded-xl text-sm shrink-0 min-h-[48px] sm:min-h-[40px]">+ Додати</button>
         </form>
-        <div id="settings-categories-list" class="flex flex-wrap gap-2"></div>
+        <div id="settings-categories-list" class="flex flex-wrap gap-2 pt-1"></div>
       </div>
 
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
         <div>
-          <h3 class="text-lg font-bold flex items-center gap-2"><span>🎨</span> Тема оформлення</h3>
-          <p class="text-xs text-slate-500 mt-0.5">Вибір зберігається на цьому пристрої. Світла чи темна тема перемикається кнопкою в шапці й працює з кожною палітрою.</p>
+          <h3 class="text-base sm:text-lg font-bold flex items-center gap-2"><span>🛟</span> Автокопії</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Раз на день і перед масовими змінами на цьому пристрої зберігається копія (останні 7). Це страховка від випадкового видалення.</p>
         </div>
-        <div id="theme-picker" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+        <div id="backups-list"></div>
       </div>
 
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
         <div>
-          <h3 class="text-lg font-bold flex items-center gap-2"><span>🔒</span> Приватність особистих розділів (PIN-захист)</h3>
-          <p class="text-xs text-slate-500 mt-0.5">Встановіть PIN-код для захисту особистих вкладок від випадкового погляду.</p>
+          <h3 class="text-base sm:text-lg font-bold flex items-center gap-2"><span>🎨</span> Тема оформлення</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Вибір зберігається на цьому пристрої.</p>
         </div>
-        <div id="privacy-settings" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+        <div id="theme-picker" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"></div>
       </div>
 
-      <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-5">
-        <h3 class="text-lg font-bold">💾 Резервне копіювання</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button onclick="exportDataToJson()" class="p-4 rounded-xl border hover:border-pink-500 bg-slate-50 dark:bg-slate-900/50 text-left transition">
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
+        <div>
+          <h3 class="text-base sm:text-lg font-bold flex items-center gap-2"><span>🔒</span> PIN-захист особистих вкладок</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Захистіть особисті розділи від випадкового перегляду.</p>
+        </div>
+        <div id="privacy-settings" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"></div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
+        <h3 class="text-base sm:text-lg font-bold">💾 Резервне копіювання</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <button onclick="exportDataToJson()" class="p-4 rounded-xl border hover:border-pink-500 bg-slate-50 dark:bg-slate-900/50 text-left transition min-h-[56px]">
             <div class="text-xl mb-1">📥</div><div class="font-semibold text-sm">Експорт у JSON</div>
           </button>
-          <label class="p-4 rounded-xl border hover:border-pink-500 bg-slate-50 dark:bg-slate-900/50 text-left transition cursor-pointer">
+          <label class="p-4 rounded-xl border hover:border-pink-500 bg-slate-50 dark:bg-slate-900/50 text-left transition cursor-pointer flex flex-col justify-center min-h-[56px]">
             <input type="file" id="import-json-file" accept=".json" onchange="importDataFromJson(event)" class="hidden">
             <div class="text-xl mb-1">📤</div><div class="font-semibold text-sm">Імпорт з JSON</div>
           </label>
-          <button onclick="confirmResetToDemo()" class="p-4 rounded-xl border hover:border-blue-500 bg-slate-50 dark:bg-slate-900/50 text-left transition">
+          <button onclick="confirmResetToDemo()" class="p-4 rounded-xl border hover:border-blue-500 bg-slate-50 dark:bg-slate-900/50 text-left transition min-h-[56px]">
             <div class="text-xl mb-1">🔄</div><div class="font-semibold text-sm">Демо-дані</div>
           </button>
-          <button onclick="confirmClearAllData()" class="p-4 rounded-xl border border-rose-200 hover:border-rose-500 bg-rose-50/30 text-left transition">
+          <button onclick="confirmClearAllData()" class="p-4 rounded-xl border border-rose-200 hover:border-rose-500 bg-rose-50/30 text-left transition min-h-[56px]">
             <div class="text-xl mb-1">🗑️</div><div class="font-semibold text-sm text-rose-600">Очистити все</div>
           </button>
         </div>
@@ -733,13 +823,13 @@
   </main>
 
   <!-- Модальне вікно -->
-  <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl max-w-md w-full mx-4 transform scale-95 transition-transform duration-200" id="modal-box">
+  <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200 px-4">
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl max-w-md w-full mx-auto transform scale-95 transition-transform duration-200" id="modal-box">
       <h3 id="modal-title" class="text-lg font-bold text-slate-900 dark:text-white mb-2">Сповіщення</h3>
       <p id="modal-message" class="text-sm text-slate-600 dark:text-slate-300 mb-6">Текст...</p>
       <div id="modal-actions" class="flex justify-end gap-3">
-        <button id="modal-cancel-btn" onclick="closeModal()" class="hidden px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Скасувати</button>
-        <button id="modal-confirm-btn" onclick="closeModal()" class="bg-pink-500 hover:bg-pink-600 text-white font-medium px-4 py-2 rounded-xl text-sm transition">Зрозуміло</button>
+        <button id="modal-cancel-btn" onclick="closeModal()" class="hidden px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition min-h-[44px]">Скасувати</button>
+        <button id="modal-confirm-btn" onclick="closeModal()" class="bg-pink-500 hover:bg-pink-600 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition min-h-[44px]">Зрозуміло</button>
       </div>
     </div>
   </div>
@@ -771,6 +861,9 @@
       partner2Avatar: '👨',
       partner1Color: '#ec4899',
       partner2Color: '#3b82f6',
+      partner1Bday: '',
+      partner2Bday: '',
+      anniversaryDate: '',
       currency: '₴',
       categories: ['Оренда', 'Комунальні', 'Продукти', 'Ресторани', 'Розваги', 'Транспорт', 'Здоровʼя', 'Інше'],
       defaultSplit: '50-50',
@@ -803,7 +896,10 @@
       personalCategoryLimits: { p1: {}, p2: {} }
     };
 
+    state.settlements = [];
+
     let currentPeriod = { type: 'month', offset: 0 };
+    let activeTabId = 'dashboard';
     let expenseCategoryChartInstance = null;
     let partnerContributionChartInstance = null;
     const personalCharts = {};
@@ -856,11 +952,11 @@
       const lbl = document.getElementById('period-label');
 
       if (currentPeriod.type === 'month') {
-        btnM.className = 'flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition bg-pink-500 text-white shadow-sm';
-        btnW.className = 'flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
+        btnM.className = 'flex-1 sm:flex-none px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold transition bg-pink-500 text-white shadow-sm min-h-[40px]';
+        btnW.className = 'flex-1 sm:flex-none px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 min-h-[40px]';
       } else {
-        btnW.className = 'flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition bg-pink-500 text-white shadow-sm';
-        btnM.className = 'flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
+        btnW.className = 'flex-1 sm:flex-none px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold transition bg-pink-500 text-white shadow-sm min-h-[40px]';
+        btnM.className = 'flex-1 sm:flex-none px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 min-h-[40px]';
       }
       const { label } = getPeriodRange();
       if (lbl) lbl.innerText = label;
@@ -899,6 +995,7 @@
             if (Array.isArray(parsed.expenses)) state.expenses = parsed.expenses;
             if (Array.isArray(parsed.fixedExpenses)) state.fixedExpenses = parsed.fixedExpenses;
             if (Array.isArray(parsed.goals)) state.goals = parsed.goals;
+            if (Array.isArray(parsed.settlements)) state.settlements = parsed.settlements;
             if (Array.isArray(parsed.personalIncomes)) state.personalIncomes = parsed.personalIncomes;
             if (Array.isArray(parsed.personalExpenses)) state.personalExpenses = parsed.personalExpenses;
             if (parsed.personalModes) state.personalModes = parsed.personalModes;
@@ -911,53 +1008,267 @@
       } catch (e) { console.error("Помилка читання localStorage:", e); }
     }
 
+    // ==== SYNC CORE START ====
+    // v3.5: синхронізація окремих записів. Колекції зберігаються в базі за id, тож
+    // одночасні правки двох партнерів не затирають одна одну, а змінюються лише потрібні шляхи.
+    const DB_ROOT = 'shared_budget_data';
+    const COLL = ['incomes', 'expenses', 'fixedExpenses', 'goals', 'personalIncomes', 'personalExpenses', 'settlements'];
+    const OWNER_COLL = ['personalGoals', 'personalFixed'];
+    const BLOB_OWNER = ['personalCategories', 'personalCategoryLimits', 'personalModes'];
+    const DEFAULT_PCATS = { p1: ['Хобі', 'Косметика/Догляд', 'Книги', 'Одежа'], p2: ['Ґаджети', 'Авто/Спорт', 'Ігри/Підписки', 'Одежа'] };
+
+    const safeKey = id => String(id).replace(/[.#$\/\[\]]/g, '_');
+    const encKey = k => String(k).replace(/[.$#\[\]\/%]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0'));
+    const decKey = k => String(k).replace(/%([0-9A-F]{2})/g, (m, h) => String.fromCharCode(parseInt(h, 16)));
+    const encMap = o => { const r = {}; Object.keys(o || {}).forEach(k => { r[encKey(k)] = o[k]; }); return r; };
+    const decMap = o => { const r = {}; Object.keys(o || {}).forEach(k => { r[decKey(k)] = o[k]; }); return r; };
+    const clean = v => JSON.parse(JSON.stringify(v));
+    const toArr = v => Array.isArray(v) ? v.filter(Boolean) : Object.keys(v || {}).map(k => v[k]).filter(Boolean);
+
+    function flattenState(st) {
+      const f = {};
+      COLL.forEach(c => (st[c] || []).forEach(r => { if (r && r.id != null) f[c + '/' + safeKey(r.id)] = r; }));
+      OWNER_COLL.forEach(c => ['p1', 'p2'].forEach(k => ((st[c] || {})[k] || []).forEach(r => { if (r && r.id != null) f[c + '/' + k + '/' + safeKey(r.id)] = r; })));
+      BLOB_OWNER.forEach(c => ['p1', 'p2'].forEach(k => {
+        if (st[c] && st[c][k] !== undefined) f[c + '/' + k] = c === 'personalCategoryLimits' ? encMap(st[c][k]) : st[c][k];
+      }));
+      const s = st.settings || {};
+      Object.keys(s).forEach(k => {
+        if (k === 'pins') Object.keys(s.pins || {}).forEach(o => { f['settings/pins/' + o] = s.pins[o]; });
+        else f['settings/' + k] = k === 'categoryLimits' ? encMap(s[k]) : s[k];
+      });
+      return f;
+    }
+
+    function diffFlat(a, b) {
+      const u = {};
+      new Set(Object.keys(a).concat(Object.keys(b))).forEach(k => {
+        if (JSON.stringify(a[k]) !== JSON.stringify(b[k])) u[k] = b[k] === undefined ? null : clean(b[k]);
+      });
+      return u;
+    }
+
+    function toTree(flat, withMeta) {
+      const root = withMeta ? { meta: { schema: 2 } } : {};
+      Object.keys(flat).forEach(path => {
+        const p = path.split('/'); let o = root;
+        for (let i = 0; i < p.length - 1; i++) o = (o[p[i]] = o[p[i]] || {});
+        o[p[p.length - 1]] = clean(flat[path]);
+      });
+      return root;
+    }
+
+    // Читання з бази: підтримує і новий формат (за id), і старий (масиви)
+    function fromRemote(val) {
+      const st = { settings: Object.assign({}, defaultSettings, val.settings || {}) };
+      if (!Array.isArray(st.settings.categories)) st.settings.categories = toArr(st.settings.categories);
+      st.settings.categoryLimits = decMap(st.settings.categoryLimits);
+      COLL.forEach(c => { st[c] = toArr(val[c]); });
+      OWNER_COLL.forEach(c => { st[c] = { p1: toArr((val[c] || {}).p1), p2: toArr((val[c] || {}).p2) }; });
+      st.personalModes = Object.assign({ p1: 'integrated', p2: 'integrated' }, val.personalModes || {});
+      st.personalCategories = Object.assign({}, DEFAULT_PCATS, val.personalCategories || {});
+      const pl = val.personalCategoryLimits || {};
+      st.personalCategoryLimits = { p1: decMap(pl.p1), p2: decMap(pl.p2) };
+      return st;
+    }
+
+    // Повертає у стан вказані шляхи (для «Відмінити»): значення undefined означає видалення
+    function applyFlatToState(st, flat) {
+      Object.keys(flat).forEach(path => {
+        const p = path.split('/'), v = flat[path] === undefined || flat[path] === null ? undefined : clone(flat[path]);
+        if (COLL.indexOf(p[0]) >= 0) {
+          st[p[0]] = (st[p[0]] || []).filter(r => safeKey(r.id) !== p[1]);
+          if (v !== undefined) st[p[0]].push(v);
+        } else if (OWNER_COLL.indexOf(p[0]) >= 0) {
+          st[p[0]] = st[p[0]] || { p1: [], p2: [] };
+          st[p[0]][p[1]] = (st[p[0]][p[1]] || []).filter(r => safeKey(r.id) !== p[2]);
+          if (v !== undefined) st[p[0]][p[1]].push(v);
+        } else if (BLOB_OWNER.indexOf(p[0]) >= 0) {
+          st[p[0]] = st[p[0]] || {};
+          if (v === undefined) delete st[p[0]][p[1]]; else st[p[0]][p[1]] = p[0] === 'personalCategoryLimits' ? decMap(v) : v;
+        } else if (p[0] === 'settings') {
+          st.settings = st.settings || {};
+          if (p[1] === 'pins') { st.settings.pins = st.settings.pins || {}; if (v === undefined) delete st.settings.pins[p[2]]; else st.settings.pins[p[2]] = v; }
+          else if (v === undefined) delete st.settings[p[1]];
+          else st.settings[p[1]] = p[1] === 'categoryLimits' ? decMap(v) : v;
+        }
+      });
+    }
+    const clone = v => JSON.parse(JSON.stringify(v));
+
+    // Підтверджені розрахунки зменшують борг за період, для якого їх зроблено
+    function applySettlements(net, list, pk) {
+      (list || []).forEach(x => { if (x.periodKey === pk) net += x.from === 'p1' ? -x.amount : x.amount; });
+      return net;
+    }
+// ==== SYNC CORE END ====
+
+    let lastSynced = {}, syncReady = false;
+
     function initSync() {
       loadLocalCache();
       updatePeriodUI();
       renderAll();
 
       if (!db) { updateSyncBadge(true); return; }
-      db.ref('shared_budget_data').on('value', (snapshot) => {
+      db.ref(DB_ROOT).on('value', (snapshot) => {
         const val = snapshot.val();
-        if (val) {
-          state = {
-            settings: Object.assign({}, defaultSettings, val.settings || {}),
-            incomes: val.incomes || [],
-            expenses: val.expenses || [],
-            fixedExpenses: val.fixedExpenses || [],
-            goals: val.goals || [],
-            personalIncomes: val.personalIncomes || [],
-            personalExpenses: val.personalExpenses || [],
-            personalModes: val.personalModes || { p1: 'integrated', p2: 'integrated' },
-            personalGoals: val.personalGoals || { p1: [], p2: [] },
-            personalFixed: val.personalFixed || { p1: [], p2: [] },
-            personalCategories: val.personalCategories || { p1: ['Хобі', 'Косметика/Догляд'], p2: ['Ґаджети', 'Авто/Спорт'] },
-            personalCategoryLimits: val.personalCategoryLimits || { p1: {}, p2: {} }
-          };
-          if (normalizeDates()) saveToCloud();
-          try { localStorage.setItem('usbudget_state', JSON.stringify(state)); } catch (e) {}
-          updatePeriodUI();
-          renderAll();
+        if (!val) {  // база порожня: засіваємо поточним станом
+          syncReady = true;
+          lastSynced = flattenState(state);
+          db.ref(DB_ROOT).set(toTree(lastSynced, true)).catch(err => console.error('Firebase err:', err));
           updateSyncBadge(true);
-        } else { saveToCloud(); }
+          return;
+        }
+        const legacy = !(val.meta && val.meta.schema >= 2);
+        state = fromRemote(val);
+        lastSynced = flattenState(state);
+        syncReady = true;
+        if (legacy) db.ref(DB_ROOT).set(toTree(lastSynced, true)).catch(err => console.error('Firebase err:', err));  // одноразова міграція
+        if (normalizeDates()) saveToCloud();
+        makeDailyBackup();
+        try { localStorage.setItem('usbudget_state', JSON.stringify(state)); } catch (e) {}
+        updatePeriodUI();
+        renderAll();
+        updateSyncBadge(true);
       }, (error) => { updateSyncBadge(false); });
     }
 
     function saveToCloud() {
       try { localStorage.setItem('usbudget_state', JSON.stringify(state)); } catch (e) {}
-      if (!db) return;
-      db.ref('shared_budget_data').set(state).catch(err => console.error("Firebase err:", err));
+      if (!db || !syncReady) return;
+      const flat = flattenState(state), updates = diffFlat(lastSynced, flat);
+      if (!Object.keys(updates).length) return;
+      lastSynced = flat;
+      db.ref(DB_ROOT).update(updates).catch(err => { console.error('Firebase err:', err); updateSyncBadge(false); });
     }
+
+    // --- v3.5: автокопії ---
+    const BK_KEY = 'usbudget_backups';
+    function readBackups() { try { return JSON.parse(localStorage.getItem(BK_KEY) || '[]'); } catch (e) { return []; } }
+    function writeBackups(list) {
+      while (list.length) {
+        try { localStorage.setItem(BK_KEY, JSON.stringify(list)); return; } catch (e) { list.pop(); }
+      }
+    }
+    function pushBackup(label) {
+      const list = readBackups();
+      list.unshift({ date: getTodayString(), time: new Date().toTimeString().slice(0, 5), label: label || '', data: JSON.stringify(state) });
+      while (list.length > 7) list.pop();
+      writeBackups(list);
+      renderBackups();
+    }
+    function makeDailyBackup() {
+      const list = readBackups();
+      if (list.some(b => b.date === getTodayString())) return;
+      pushBackup('щоденна');
+    }
+    function renderBackups() {
+      const box = document.getElementById('backups-list');
+      if (!box) return;
+      const list = readBackups();
+      box.innerHTML = list.length ? list.map((b, i) => `
+        <div class="flex items-center justify-between gap-3 py-2 border-b border-slate-100 dark:border-slate-800/60 text-sm">
+          <div><div class="font-medium">${esc(b.date)} ${esc(b.time || '')}</div><div class="text-xs text-slate-500">${esc(b.label || '')} · ${Math.round(b.data.length / 1024)} КБ</div></div>
+          <button type="button" onclick="restoreBackup(${i})" class="text-xs font-semibold px-3 py-2 rounded-xl border min-h-[40px]">Відновити</button>
+        </div>`).join('') : '<p class="text-xs text-slate-500">Копій ще немає: перша з’явиться після синхронізації.</p>';
+    }
+    function restoreBackup(i) {
+      const b = readBackups()[i];
+      if (!b) return;
+      showConfirmModal('Відновити копію?', `Поточні дані буде замінено копією від ${b.date} ${b.time || ''}. Перед цим створиться ще одна копія. Заблоковані особисті розділи не зачіпаються.`, () => {
+        pushBackup('перед відновленням');
+        const prev = JSON.parse(JSON.stringify(state)), locked = ['p1', 'p2'].filter(isLocked);
+        state = Object.assign(state, JSON.parse(b.data));
+        protectLocked(prev, locked);
+        saveToCloud(); renderAll();
+        showModal('Готово', 'Копію відновлено.');
+      }, 'Відновити', true);
+    }
+
+    // --- v3.5: «Відмінити» після видалення ---
+    let undoTimer = null;
+    function hideUndo() { const t = document.getElementById('undo-toast'); if (t) t.style.display = 'none'; }
+    function showUndo(touched, text) {
+      let t = document.getElementById('undo-toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'undo-toast';
+        t.className = 'fixed left-1/2 -translate-x-1/2 bottom-24 sm:bottom-6 z-[60] items-center gap-3 px-4 py-3 rounded-2xl bg-slate-900 text-white text-sm shadow-xl';
+        document.body.appendChild(t);
+      }
+      t.innerHTML = '<span></span><button type="button" class="font-semibold underline underline-offset-2 min-h-[32px]">Відмінити</button>';
+      t.firstChild.textContent = text;
+      t.lastChild.onclick = () => { applyFlatToState(state, touched); saveToCloud(); renderAll(); hideUndo(); };
+      t.style.display = 'flex';
+      clearTimeout(undoTimer);
+      undoTimer = setTimeout(hideUndo, 7000);
+    }
+    function installUndo() {
+      ['deleteIncome', 'deleteExpense', 'deleteFixedExpense', 'deleteGoal', 'deletePersonal', 'deletePersonalGoal', 'deletePersonalFixed',
+        'deleteCategory', 'deletePersonalCategory', 'deleteSettlement'].forEach(name => {
+        const orig = window[name];
+        if (typeof orig !== 'function') return;
+        window[name] = function () {
+          const before = flattenState(state);
+          const r = orig.apply(this, arguments);
+          const after = flattenState(state), touched = {};
+          Object.keys(Object.assign({}, before, after)).forEach(k => { if (JSON.stringify(before[k]) !== JSON.stringify(after[k])) touched[k] = before[k]; });
+          if (Object.keys(touched).length) showUndo(touched, 'Видалено');
+          return r;
+        };
+      });
+    }
+
+    // --- v3.5: підтверджені взаєморозрахунки ---
+    function currentPKey() { return currentPeriod.type + ':' + getPeriodRange().periodKey; }
+    const slotName = k => k === 'p1' ? getPartner1Name() : getPartner2Name();
+    function confirmSettlement() {
+      const net = window.__net || 0;
+      if (Math.abs(net) < 1) { showModal('Баланс врегульовано', 'Ніхто нікому не винен за цей період.'); return; }
+      const from = net > 0 ? 'p1' : 'p2', to = from === 'p1' ? 'p2' : 'p1', amt = Math.round(Math.abs(net));
+      showConfirmModal('Підтвердити розрахунок?', `${slotName(from)} переказав(-ла) ${amt.toLocaleString()} ${getCurrency()} для ${slotName(to)} за період «${getPeriodRange().label}». Баланс буде обнулено.`, () => {
+        (state.settlements = state.settlements || []).push({ id: 'st_' + Date.now(), date: getTodayString(), periodKey: currentPKey(), from, to, amount: amt });
+        saveToCloud(); renderAll();
+      }, 'Підтвердити');
+    }
+    function deleteSettlement(id) { state.settlements = (state.settlements || []).filter(x => x.id !== id); saveToCloud(); renderAll(); }
+    function renderSettlementHistory() {
+      const box = document.getElementById('settlement-history');
+      if (!box) return;
+      const curr = getCurrency(), list = (state.settlements || []).slice().reverse();
+      box.innerHTML = list.length ? list.map(x => `
+        <div class="flex items-center justify-between gap-3 py-2.5 border-b border-slate-100 dark:border-slate-800/60 text-sm">
+          <div><div class="font-medium">${esc(slotName(x.from))} → ${esc(slotName(x.to))}</div><div class="text-xs text-slate-500">${esc(x.date)} · ${esc(String(x.periodKey).split(':')[1] || '')}</div></div>
+          <div class="flex items-center gap-3"><span class="font-semibold">${x.amount.toLocaleString()} ${curr}</span>
+            <button type="button" onclick="deleteSettlement('${x.id}')" class="text-rose-500 text-xs font-medium min-h-[36px] px-2">Скасувати</button></div>
+        </div>`).join('') : '<p class="text-center text-slate-400 text-xs py-3">Підтверджених розрахунків ще немає</p>';
+    }
+
+    // --- v3.5: перевірка введення у всіх формах ---
+    document.addEventListener('submit', e => {
+      const f = e.target;
+      if (!f || !f.querySelectorAll) return;
+      const stop = msg => { e.preventDefault(); e.stopImmediatePropagation(); showModal('Увага', msg); };
+      for (const inp of f.querySelectorAll('input')) {
+        if (inp.type === 'text' && inp.required && !inp.value.trim()) { stop('Заповніть обов’язкові поля: пробіли не рахуються.'); inp.focus(); return; }
+        if (inp.type === 'number' && inp.value !== '') {
+          const n = Number(inp.value);
+          if (!isFinite(n) || n > 1e9 || (inp.min !== '' && n < Number(inp.min))) { stop('Перевірте число: воно має бути в межах від ' + (inp.min || '0') + ' до 1 000 000 000.'); inp.focus(); return; }
+        }
+      }
+    }, true);
+
 
     function updateSyncBadge(isOk) {
       const el = document.getElementById('sync-status');
       if (!el) return;
       if (isOk) {
-        el.className = 'text-xs px-3 py-1.5 rounded-full font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 flex items-center gap-1.5';
-        el.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Синхронізовано';
+        el.className = 'text-[11px] sm:text-xs px-2.5 py-1.5 rounded-full font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 flex items-center gap-1.5';
+        el.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span><span class="hidden sm:inline">Синхронізовано</span>';
       } else {
-        el.className = 'text-xs px-3 py-1.5 rounded-full font-medium bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 flex items-center gap-1.5';
-        el.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> Помилка мережі';
+        el.className = 'text-[11px] sm:text-xs px-2.5 py-1.5 rounded-full font-medium bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 flex items-center gap-1.5';
+        el.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span><span class="hidden sm:inline">Помилка мережі</span>';
       }
     }
 
@@ -980,22 +1291,52 @@
       document.getElementById('theme-icon').innerText = '☀️';
     }
 
+    function openMoreMenu() {
+      const modal = document.getElementById('mob-more-modal');
+      const box = document.getElementById('mob-more-box');
+      if (!modal || !box) return;
+      modal.classList.remove('hidden');
+      setTimeout(() => { modal.classList.remove('opacity-0'); box.classList.remove('translate-y-full'); }, 10);
+    }
+    function closeMoreMenu() {
+      const modal = document.getElementById('mob-more-modal');
+      const box = document.getElementById('mob-more-box');
+      if (!modal || !box) return;
+      modal.classList.add('opacity-0');
+      box.classList.add('translate-y-full');
+      setTimeout(() => { modal.classList.add('hidden'); }, 200);
+    }
+
     function switchTab(tabId) {
+      activeTabId = tabId;
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(el => {
         el.className = 'tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800';
       });
+      document.querySelectorAll('.mobile-tab-btn').forEach(el => {
+        el.className = 'mobile-tab-btn flex flex-col items-center justify-center py-1 px-2 text-slate-500 dark:text-slate-400';
+      });
+
       const targetTab = document.getElementById('tab-' + tabId);
       if (targetTab) targetTab.classList.remove('hidden');
+
       const activeBtn = document.getElementById('btn-' + tabId);
       if (activeBtn) {
         activeBtn.className = 'tab-btn shrink-0 whitespace-nowrap px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-pink-500 text-white shadow-md shadow-pink-500/20';
       }
+
+      const mobMap = { dashboard: 'mob-btn-dashboard', incomes: 'mob-btn-incomes', expenses: 'mob-btn-expenses', goals: 'mob-btn-goals' };
+      if (mobMap[tabId]) {
+        const mobEl = document.getElementById(mobMap[tabId]);
+        if (mobEl) mobEl.className = 'mobile-tab-btn flex flex-col items-center justify-center py-1 px-2 text-pink-500 font-bold'; } else { const mm = document.getElementById('mob-btn-more'); if (mm) mm.className = 'mobile-tab-btn flex flex-col items-center justify-center py-1 px-2 text-pink-500 font-bold'; }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
       if (tabId === 'p1' || tabId === 'p2') {
         renderPersonalTabs();
         if (isLocked(tabId)) setTimeout(() => { const i = document.getElementById(`pp-${tabId}-pin`); if (i) i.focus(); }, 50);
       }
-      if (tabId === 'settings') populateSettingsForm();
+      if (tabId === 'settings') { populateSettingsForm(); renderBackups(); }
       if (tabId === 'fixed') renderFixedExpenses();
       if (tabId === 'expenses') renderCategoryLimitsEditor();
     }
@@ -1013,7 +1354,7 @@
       document.getElementById('modal-cancel-btn').classList.add('hidden');
       const btn = document.getElementById('modal-confirm-btn');
       btn.innerText = 'Зрозуміло';
-      btn.className = 'bg-pink-500 hover:bg-pink-600 text-white font-medium px-4 py-2 rounded-xl text-sm transition';
+      btn.className = 'bg-pink-500 hover:bg-pink-600 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition min-h-[44px]';
       btn.onclick = closeModal;
       openModalBackdrop();
     }
@@ -1025,7 +1366,7 @@
       cancelBtn.onclick = closeModal;
       const btn = document.getElementById('modal-confirm-btn');
       btn.innerText = confirmText;
-      btn.className = isDanger ? 'bg-rose-500 hover:bg-rose-600 text-white font-medium px-4 py-2 rounded-xl text-sm transition' : 'bg-pink-500 hover:bg-pink-600 text-white font-medium px-4 py-2 rounded-xl text-sm transition';
+      btn.className = isDanger ? 'bg-rose-500 hover:bg-rose-600 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition min-h-[44px]' : 'bg-pink-500 hover:bg-pink-600 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition min-h-[44px]';
       btn.onclick = () => { closeModal(); if (typeof onConfirm === 'function') onConfirm(); };
       openModalBackdrop();
     }
@@ -1056,7 +1397,7 @@
           <div class="flex items-center gap-2">
             <input type="number" min="0" value="${limits[cat] || ''}" placeholder="Без ліміту" 
               onchange="updateCategoryLimit('${esc(cat)}', this.value)" 
-              class="w-full p-2 rounded-lg border bg-white dark:bg-slate-900 text-xs">
+              class="w-full p-2.5 rounded-lg border bg-white dark:bg-slate-900 text-xs">
             <span class="text-xs text-slate-500">${curr}</span>
           </div>
         </div>
@@ -1080,7 +1421,7 @@
         const limit = Math.round(limits[cat] * (currentPeriod.type === 'week' ? 12 / 52 : 1)), spent = spentMap[cat] || 0, pct = Math.min(100, Math.round((spent / limit) * 100));
         let barColor = 'bg-emerald-500', badgeBg = 'bg-emerald-100 text-emerald-800', statusText = 'У нормі';
         if (spent > limit) { barColor = 'bg-rose-500'; badgeBg = 'bg-rose-100 text-rose-800'; statusText = 'Перевищено!'; }
-        else if (pct >= 80) { barColor = 'bg-amber-500'; badgeBg = 'bg-amber-100 text-amber-800'; statusText = 'Близько до ліміту'; }
+        else if (pct >= 80) { barColor = 'bg-amber-500'; badgeBg = 'bg-amber-100 text-amber-800'; statusText = 'Близько'; }
         return `
           <div class="space-y-1.5 p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40">
             <div class="flex justify-between items-center text-xs">
@@ -1153,26 +1494,52 @@
 
     function renderFixedExpenses() {
       const tbody = document.getElementById('fixed-expenses-table-body');
-      if (!tbody) return;
+      const mobileList = document.getElementById('fixed-mobile-list');
       const curr = getCurrency(), { periodKey } = getPeriodRange(), p1 = getPartner1Name(), p2 = getPartner2Name();
-      tbody.innerHTML = (state.fixedExpenses || []).length ? state.fixedExpenses.map(fx => {
-        const isPaid = (fx.paidPeriods || []).includes(periodKey);
-        const typeLabels = { expense: '📉 Витрата', savings: '💎 Накопичення', debt: '💳 Борг' };
-        const scopeText = fx.scope === 'shared' ? '👥 Спільний' : (fx.scope === 'p1' ? `👩 ${p1}` : `👨 ${p2}`);
-        return `
-          <tr class="border-b border-slate-100 dark:border-slate-800/60">
-            <td class="py-3 font-medium">${esc(fx.title)}${fx.endDate ? `<span class="block text-[10px] font-normal text-slate-400">до ${fx.endDate}</span>` : ''}</td>
-            <td class="py-3 text-xs"><span class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-700">${typeLabels[fx.type] || fx.type}</span></td>
-            <td class="py-3 text-xs text-slate-500">${FREQ[fx.frequency] || fx.frequency}</td>
-            <td class="py-3 font-semibold">${fx.amount.toLocaleString()} ${curr}<span class="block text-[10px] font-normal text-slate-400">≈ ${Math.round(fx.amount * ({ week: 52 / 12, month: 1, quarter: 1 / 3, year: 1 / 12 }[fx.frequency] || 1)).toLocaleString()} ${curr}/міс</span></td>
-            <td class="py-3 text-xs">${scopeText}</td>
-            <td class="py-3 text-right flex items-center justify-end gap-2">
-              <button onclick="markFixedPaid('${fx.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition ${isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-pink-500 text-white'}">${isPaid ? '✅ Сплачено' : '💳 Сплатити'}</button>
-              <button onclick="deleteFixedExpense('${fx.id}')" class="text-rose-500 text-xs p-1">✕</button>
-            </td>
-          </tr>
-        `;
-      }).join('') : `<tr><td colspan="6" class="py-4 text-center text-slate-400 text-xs">Немає регулярних платежів</td></tr>`;
+      const typeLabels = { expense: '📉 Витрата', savings: '💎 Накопичення', debt: '💳 Борг' };
+      const items = state.fixedExpenses || [];
+
+      if (tbody) {
+        tbody.innerHTML = items.length ? items.map(fx => {
+          const isPaid = (fx.paidPeriods || []).includes(periodKey);
+          const scopeText = fx.scope === 'shared' ? '👥 Спільний' : (fx.scope === 'p1' ? `👩 ${p1}` : `👨 ${p2}`);
+          return `
+            <tr class="border-b border-slate-100 dark:border-slate-800/60">
+              <td class="py-3 font-medium">${esc(fx.title)}${fx.endDate ? `<span class="block text-[10px] font-normal text-slate-400">до ${fx.endDate}</span>` : ''}</td>
+              <td class="py-3 text-xs"><span class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-700">${typeLabels[fx.type] || fx.type}</span></td>
+              <td class="py-3 text-xs text-slate-500">${FREQ[fx.frequency] || fx.frequency}</td>
+              <td class="py-3 font-semibold">${fx.amount.toLocaleString()} ${curr}</td>
+              <td class="py-3 text-xs">${scopeText}</td>
+              <td class="py-3 text-right flex items-center justify-end gap-2">
+                <button onclick="markFixedPaid('${fx.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition ${isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-pink-500 text-white'}">${isPaid ? '✅ Сплачено' : '💳 Сплатити'}</button>
+                <button onclick="deleteFixedExpense('${fx.id}')" class="text-rose-500 text-xs p-1">✕</button>
+              </td>
+            </tr>
+          `;
+        }).join('') : `<tr><td colspan="6" class="py-4 text-center text-slate-400 text-xs">Немає регулярних платежів</td></tr>`;
+      }
+
+      if (mobileList) {
+        mobileList.innerHTML = items.length ? items.map(fx => {
+          const isPaid = (fx.paidPeriods || []).includes(periodKey);
+          const scopeText = fx.scope === 'shared' ? '👥 Спільний' : (fx.scope === 'p1' ? `👩 ${p1}` : `👨 ${p2}`);
+          return `
+            <div class="p-3.5 rounded-2xl border bg-slate-50 dark:bg-slate-900/40 space-y-2">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h4 class="font-bold text-sm">${esc(fx.title)}</h4>
+                  <p class="text-[11px] text-slate-500">${typeLabels[fx.type] || fx.type} · ${FREQ[fx.frequency] || fx.frequency} · ${scopeText}</p>
+                </div>
+                <button onclick="deleteFixedExpense('${fx.id}')" class="text-slate-400 hover:text-rose-500 text-xs p-1">✕</button>
+              </div>
+              <div class="flex justify-between items-center pt-1 border-t border-slate-200/60 dark:border-slate-800">
+                <span class="font-bold text-sm">${fx.amount.toLocaleString()} ${curr}</span>
+                <button onclick="markFixedPaid('${fx.id}')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition ${isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-pink-500 text-white'}">${isPaid ? '✅ Сплачено' : '💳 Сплатити'}</button>
+              </div>
+            </div>
+          `;
+        }).join('') : `<p class="text-center text-slate-400 text-xs py-4">Немає регулярних платежів</p>`;
+      }
     }
 
     function addGoal(e) {
@@ -1189,25 +1556,6 @@
       });
       saveToCloud(); renderGoals();
       document.getElementById('goal-form').reset();
-    }
-
-    function contributeGoalPrompt(id) {
-      const g = state.goals.find(x => x.id === id);
-      if (!g) return;
-      const p1 = getPartner1Name(), p2 = getPartner2Name();
-      showConfirmModal('Внесок до цілі', `Хто робить внесок до «${g.title}»?`, () => {
-        const amtStr = prompt('Введіть суму внеску:', '1000');
-        const amt = parseFloat(amtStr);
-        if (!amt || amt <= 0) return;
-
-        const partnerName = confirm(`Натисніть OK для внеску від ${p1}, або Скасувати для ${p2}`) ? p1 : p2;
-
-        g.current = Math.min(g.target, g.current + amt);
-        if (!g.history) g.history = [];
-        g.history.push({ date: getTodayString(), partner: partnerName, amount: amt });
-
-        saveToCloud(); renderGoals(); renderAll();
-      }, 'Обрати суму та внести');
     }
 
     function deleteGoal(id) {
@@ -1230,31 +1578,31 @@
         const historyHtml = (g.history || []).length ? `
           <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60 text-xs space-y-1">
             <span class="font-semibold text-slate-500">Останні внески:</span>
-            ${g.history.slice(-3).reverse().map(h => `<div class="flex justify-between text-slate-600 dark:text-slate-400"><span>${h.partner} (${h.date}):</span><span class="font-medium text-emerald-600">+${h.amount.toLocaleString()} ${curr}</span></div>`).join('')}
+            ${g.history.slice(-3).reverse().map(h => `<div class="flex justify-between text-slate-600 dark:text-slate-400"><span>${esc(h.partner)} (${h.date}):</span><span class="font-medium text-emerald-600">+${h.amount.toLocaleString()} ${curr}</span></div>`).join('')}
           </div>
         ` : '';
 
         return `
-          <div class="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border shadow-xs space-y-4">
+          <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border shadow-xs space-y-3.5">
             <div class="flex justify-between items-start">
               <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <h4 class="font-bold text-base">${esc(g.title)}</h4>
+                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                  <h4 class="font-bold text-sm sm:text-base">${esc(g.title)}</h4>
                   ${scopeBadge}
                 </div>
-                <p class="text-xs text-slate-500">Зібрано ${g.current.toLocaleString()} з ${g.target.toLocaleString()} ${curr} ${g.deadline ? `· До: ${g.deadline}` : ''}</p>
+                <p class="text-xs text-slate-500">${g.current.toLocaleString()} з ${g.target.toLocaleString()} ${curr} ${g.deadline ? `· До: ${g.deadline}` : ''}</p>
               </div>
               <button onclick="deleteGoal('${g.id}')" class="text-slate-400 hover:text-rose-500 text-xs p-1">✕</button>
             </div>
             <div class="w-full bg-slate-100 dark:bg-slate-700 h-3 rounded-full overflow-hidden">
               <div class="bg-pink-500 h-full rounded-full transition-all duration-500" style="width: ${percent}%"></div>
             </div>
-            <div class="flex items-center justify-between text-xs font-semibold">
-              <span class="text-pink-600">Прогрес: ${percent}%</span>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1">
+              <span class="text-xs font-semibold text-pink-600">Прогрес: ${percent}%</span>
               <div class="flex items-center gap-1.5">
-                <input type="number" min="1" id="gc-amt-${g.id}" placeholder="Сума" class="w-20 p-1.5 rounded-lg border bg-white dark:bg-slate-900 text-xs font-normal">
-                <button onclick="contributeGoal('${g.id}', 'p1')" class="bg-pink-500 hover:bg-pink-600 text-white px-2.5 py-1.5 rounded-xl transition shadow-sm">${getPartner1Avatar()} ${esc(p1)}</button>
-                <button onclick="contributeGoal('${g.id}', 'p2')" class="bg-pink-500 hover:bg-pink-600 text-white px-2.5 py-1.5 rounded-xl transition shadow-sm">${getPartner2Avatar()} ${esc(p2)}</button>
+                <input type="number" min="1" id="gc-amt-${g.id}" placeholder="Сума" class="w-24 p-2.5 rounded-xl border bg-white dark:bg-slate-900 text-xs">
+                <button onclick="contributeGoal('${g.id}', 'p1')" class="bg-pink-500 hover:bg-pink-600 text-white px-3 py-2.5 rounded-xl text-xs font-semibold transition shadow-sm">${getPartner1Avatar()}</button>
+                <button onclick="contributeGoal('${g.id}', 'p2')" class="bg-pink-500 hover:bg-pink-600 text-white px-3 py-2.5 rounded-xl text-xs font-semibold transition shadow-sm">${getPartner2Avatar()}</button>
               </div>
             </div>
             ${historyHtml}
@@ -1423,9 +1771,9 @@
 
     function formatPartnerBadge(name) {
       const p1 = getPartner1Name(), p2 = getPartner2Name(), p1Avatar = getPartner1Avatar(), p2Avatar = getPartner2Avatar();
-      if (name === p1 || name === 'Партнер 1') return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-pink-50 text-pink-700 border"><span>${p1Avatar}</span><span>${p1}</span></span>`;
-      if (name === p2 || name === 'Партнер 2') return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 border"><span>${p2Avatar}</span><span>${p2}</span></span>`;
-      if (name === 'Спільно') return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-purple-50 text-purple-700 border"><span>👥</span><span>Спільно</span></span>`;
+      if (name === p1 || name === 'Партнер 1') return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-semibold bg-pink-50 text-pink-700 border"><span>${p1Avatar}</span><span>${p1}</span></span>`;
+      if (name === p2 || name === 'Партнер 2') return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 border"><span>${p2Avatar}</span><span>${p2}</span></span>`;
+      if (name === 'Спільно') return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-semibold bg-purple-50 text-purple-700 border"><span>👥</span><span>Спільно</span></span>`;
       return `<span class="font-medium">${name}</span>`;
     }
 
@@ -1447,7 +1795,7 @@
     }
     function deleteExpense(id) { state.expenses = state.expenses.filter(e => e.id !== id); unmarkPaid(id); saveToCloud(); renderAll(); }
 
-    function confirmSettlement() { showModal('Успішно', 'Взаєморозрахунки підтверджено!'); }
+    
 
     function updateSettingsPreviews() {
       const p1Avatar = document.getElementById('settings-p1-avatar')?.value || getPartner1Avatar();
@@ -1466,6 +1814,9 @@
       document.getElementById('settings-p2-name').value = s.partner2 || 'Партнер 2';
       document.getElementById('settings-p1-avatar').value = s.partner1Avatar || '👩';
       document.getElementById('settings-p2-avatar').value = s.partner2Avatar || '👨';
+      document.getElementById('settings-p1-bday').value = s.partner1Bday || '';
+      document.getElementById('settings-p2-bday').value = s.partner2Bday || '';
+      document.getElementById('settings-anniversary').value = s.anniversaryDate || '';
       document.getElementById('settings-p1-color').value = s.partner1Color || '#ec4899';
       document.getElementById('settings-p2-color').value = s.partner2Color || '#3b82f6';
       document.getElementById('settings-currency').value = s.currency || '₴';
@@ -1480,10 +1831,13 @@
       state.settings.partner2 = document.getElementById('settings-p2-name').value.trim() || 'Партнер 2';
       state.settings.partner1Avatar = document.getElementById('settings-p1-avatar').value;
       state.settings.partner2Avatar = document.getElementById('settings-p2-avatar').value;
+      state.settings.partner1Bday = document.getElementById('settings-p1-bday').value;
+      state.settings.partner2Bday = document.getElementById('settings-p2-bday').value;
+      state.settings.anniversaryDate = document.getElementById('settings-anniversary').value;
       state.settings.partner1Color = document.getElementById('settings-p1-color').value;
       state.settings.partner2Color = document.getElementById('settings-p2-color').value;
       saveToCloud(); renderAll();
-      showModal('Збережено', 'Профілі оновлено!');
+      showModal('Збережено', 'Профілі та дати оновлено!');
     }
 
     function saveFinanceSettings(e) {
@@ -1535,7 +1889,7 @@
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(stripLocked(state), null, 2));
       const dl = document.createElement('a');
       dl.setAttribute("href", dataStr);
-      dl.setAttribute("download", `usbudget_v3.1_${new Date().toISOString().slice(0, 10)}.json`);
+      dl.setAttribute("download", `usbudget_v3.5_${new Date().toISOString().slice(0, 10)}.json`);
       document.body.appendChild(dl); dl.click(); dl.remove();
     }
 
@@ -1547,7 +1901,8 @@
         try {
           const imp = JSON.parse(e.target.result);
           if (imp && (imp.incomes || imp.expenses || imp.settings)) {
-            const prev = JSON.parse(JSON.stringify(state)), locked = ['p1', 'p2'].filter(isLocked);
+            pushBackup('перед масовою зміною');
+        const prev = JSON.parse(JSON.stringify(state)), locked = ['p1', 'p2'].filter(isLocked);
             state = Object.assign(state, imp);
             protectLocked(prev, locked);
             saveToCloud(); renderAll();
@@ -1561,8 +1916,9 @@
     function confirmResetToDemo() {
       showConfirmModal('Демо-дані', 'Завантажити демо-записи?', () => {
         const t = getTodayString();
+        pushBackup('перед масовою зміною');
         const prev = JSON.parse(JSON.stringify(state)), locked = ['p1', 'p2'].filter(isLocked);
-        state.settings = { ...defaultSettings, partner1: 'Олена', partner2: 'Тарас', categoryLimits: { 'Оренда': 18000, 'Продукти': 10000, 'Ресторани': 5000 } };
+        state.settings = { ...defaultSettings, partner1: 'Олена', partner2: 'Тарас', partner1Bday: '1998-05-14', partner2Bday: '1997-11-20', anniversaryDate: '2021-09-18', categoryLimits: { 'Оренда': 18000, 'Продукти': 10000, 'Ресторани': 5000 } };
         state.incomes = [{ id: '1', date: t, partner: 'Олена', source: 'Дизайн', amount: 48000 }, { id: '2', date: t, partner: 'Тарас', source: 'Розробка', amount: 55000 }];
         state.expenses = [{ id: '1', date: t, title: 'Оренда', category: 'Оренда', payer: 'Тарас', amount: 18000, split: 'proportional' }, { id: '2', date: t, title: 'Продукти', category: 'Продукти', payer: 'Олена', amount: 6400, split: '50-50' }];
         state.goals = [{ id: '1', title: 'Карпати', target: 35000, current: 22000, scope: 'shared', deadline: '2027-07-01', history: [{date: t, partner: 'Олена', amount: 12000}, {date: t, partner: 'Тарас', amount: 10000}] }];
@@ -1576,6 +1932,7 @@
 
     function confirmClearAllData() {
       showConfirmModal('Очищення', 'Видалити всі записи?', () => {
+        pushBackup('перед масовою зміною');
         const prev = JSON.parse(JSON.stringify(state)), locked = ['p1', 'p2'].filter(isLocked);
         state.incomes = []; state.expenses = []; state.fixedExpenses = []; state.goals = []; state.personalIncomes = []; state.personalExpenses = [];
         state.personalGoals = { p1: [], p2: [] }; state.personalFixed = { p1: [], p2: [] };
@@ -1585,16 +1942,84 @@
       }, 'Очистити все', true);
     }
 
+    // --- v3.5: свята, річниці та сезонні «моменти» ---
+    // Православна Пасха за юліанською пасхалією, переведена в григоріанський календар (+13 діб, 1900–2099)
+    function easterDate(y) {
+      const a = y % 4, b = y % 7, c = y % 19, d = (19 * c + 15) % 30, e = (2 * a + 4 * b - d + 34) % 7;
+      return new Date(y, Math.floor((d + e + 114) / 31) - 1, ((d + e + 114) % 31) + 1 + 13);
+    }
+    function nthWeekday(y, month, weekday, n) {
+      const shift = (weekday - new Date(y, month, 1).getDay() + 7) % 7;
+      return new Date(y, month, 1 + shift + (n - 1) * 7);
+    }
+    const yearsWord = n => { const m = n % 100, l = n % 10; return (m > 10 && m < 15) ? 'років' : l === 1 ? 'рік' : (l >= 2 && l <= 4) ? 'роки' : 'років'; };
+
+    function getMoment(now) {
+      const y = now.getFullYear(), day = new Date(y, now.getMonth(), now.getDate()), md = toLocalISO(day).slice(5);
+      const s = state.settings || {};
+      const same = str => !!str && str.length >= 10 && str.slice(5, 10) === md;
+      const p1 = esc(getPartner1Name()), p2 = esc(getPartner2Name());
+
+      if (same(s.anniversaryDate)) {
+        const yrs = y - parseInt(s.anniversaryDate.slice(0, 4), 10);
+        return { id: 'anniversary', pal: 'valentine', emoji: '💖', msg: `Вітаємо з річницею, ${p1} та ${p2}!${yrs > 0 ? ` ${yrs} ${yearsWord(yrs)} разом.` : ''} Любові та щастя на довгі роки.` };
+      }
+      if (same(s.partner1Bday)) return { id: 'bday1', pal: 'party', emoji: '🎂', msg: `З Днем народження, ${p1}! Нехай збуваються всі мрії.` };
+      if (same(s.partner2Bday)) return { id: 'bday2', pal: 'party', emoji: '🎂', msg: `З Днем народження, ${p2}! Натхнення, здоров'я та приємних сюрпризів.` };
+
+      const list = [
+        { at: new Date(y, 0, 1), before: 1, after: 1, id: 'newyear', pal: 'newyear', emoji: '🎆', msg: 'З Новим роком! Нехай цей рік буде щедрим на радість і спільні плани.' },
+        { at: new Date(y, 11, 6), before: 0, after: 0, id: 'nicholas', pal: null, emoji: '🎁', msg: 'З Днем святого Миколая! Чудових подарунків і гарного настрою.' },
+        { at: new Date(y, 11, 25), before: 1, after: 1, id: 'christmas', pal: 'christmas', emoji: '🎄', msg: 'З Різдвом Христовим! Затишку й тепла вашій родині.' },
+        { at: new Date(y, 1, 14), before: 1, after: 0, id: 'valentine', pal: 'valentine', emoji: '💘', msg: 'З Днем закоханих! Нехай у вас завжди буде що святкувати разом.' },
+        { at: new Date(y, 2, 8), before: 1, after: 0, id: 'womens', pal: 'womens', emoji: '🌼', msg: 'З 8 Березня! Весняного настрою та теплих слів.' },
+        { at: easterDate(y), before: 1, after: 1, id: 'easter', pal: 'easter', emoji: '🐣', msg: 'Христос воскрес! Світлого Великодня вам і вашим рідним.' },
+        { at: nthWeekday(y, 4, 0, 2), before: 0, after: 0, id: 'mother', pal: 'mother', emoji: '💐', msg: 'З Днем матері! Дякуємо за любов і турботу.' },
+        { at: nthWeekday(y, 4, 4, 3), before: 0, after: 0, id: 'vyshyvanka', pal: 'vyshyvanka', emoji: '🧵', msg: 'З Днем вишиванки! Носіть свою історію з гордістю.' },
+        { at: new Date(y, 5, 28), before: 0, after: 0, id: 'constitution', pal: 'flag', emoji: '💙💛', msg: 'З Днем Конституції України!' },
+        { at: new Date(y, 7, 24), before: 0, after: 0, id: 'independence', pal: 'flag', emoji: '💙💛', msg: 'З Днем Незалежності України! Слава Україні!' },
+        { at: new Date(y, 9, 1), before: 0, after: 0, id: 'defenders', pal: null, emoji: '💙💛', msg: 'З Днем захисників і захисниць України! Дякуємо за можливість жити, працювати й будувати плани.' },
+        { at: new Date(y, 9, 31), before: 0, after: 0, id: 'halloween', pal: 'halloween', emoji: '🎃', msg: 'Щасливого Геловіну! Солодощів без перевитрат.' }
+      ];
+      const DAY = 86400000;
+      return list.find(h => day >= new Date(h.at.getFullYear(), h.at.getMonth(), h.at.getDate() - h.before) && day <= new Date(h.at.getFullYear(), h.at.getMonth(), h.at.getDate() + h.after)) || null;
+    }
+
+    function checkHolidaysAndAnniversaries() {
+      const root = document.documentElement, box = document.getElementById('holiday-banner-container');
+      const mom = getMoment(new Date());
+      let pref = 'auto'; try { pref = localStorage.getItem('usbudget_theme') || 'auto'; } catch (e) {}
+      // Палітра моменту діє лише при автоматичній темі
+      if (mom && mom.pal && pref === 'auto') root.setAttribute('data-moment', mom.pal); else root.removeAttribute('data-moment');
+      const logo = document.getElementById('app-logo');
+      if (mom && logo && [...mom.emoji].length === 1) logo.textContent = mom.emoji;
+      if (!box) return;
+      let dismissed = ''; try { dismissed = localStorage.getItem('usbudget_banner_dismissed') || ''; } catch (e) {}
+      const key = mom ? mom.id + '-' + new Date().getFullYear() : '';
+      if (!mom || dismissed === key) { box.innerHTML = ''; return; }
+      box.innerHTML = `
+        <div class="p-3.5 sm:p-4 rounded-2xl flex items-center gap-3 shadow-sm" style="background: color-mix(in srgb, var(--s-accent, #ec4899) 12%, var(--s-card, #ffffff)); border: 1px solid color-mix(in srgb, var(--s-accent, #ec4899) 35%, transparent);">
+          <span class="text-2xl sm:text-3xl shrink-0">${mom.emoji}</span>
+          <p class="flex-1 text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">${mom.msg}</p>
+          <button type="button" onclick="dismissBanner('${key}')" aria-label="Закрити" class="shrink-0 w-9 h-9 rounded-xl text-slate-500 hover:bg-black/5 dark:hover:bg-white/10 transition">✕</button>
+        </div>`;
+    }
+    function dismissBanner(key) { try { localStorage.setItem('usbudget_banner_dismissed', key); } catch (e) {} checkHolidaysAndAnniversaries(); }
+
     function renderAll() {
       const curr = getCurrency();
       updateFormOptions();
       populateSettingsForm();
+      checkHolidaysAndAnniversaries();
 
       const periodIncomes = filterByPeriod(state.incomes);
       const periodExpenses = filterByPeriod(state.expenses);
 
+      // Доходи (таблиця та мобільні картки)
       const incTable = document.getElementById('incomes-table-body');
-      incTable.innerHTML = periodIncomes.length ? periodIncomes.map(i => `
+      const incMob = document.getElementById('incomes-mobile-list');
+      
+      const incHtml = periodIncomes.length ? periodIncomes.map(i => `
         <tr class="border-b border-slate-100 dark:border-slate-800/60">
           <td class="py-3 text-xs text-slate-500">${i.date || '—'}</td>
           <td class="py-3 font-medium">${formatPartnerBadge(i.partner)}</td>
@@ -1603,9 +2028,31 @@
           <td class="py-3 text-right"><button onclick="deleteIncome('${i.id}')" class="text-rose-500 text-xs">Видалити</button></td>
         </tr>
       `).join('') : `<tr><td colspan="5" class="py-4 text-center text-slate-400 text-xs">Немає записів за період</td></tr>`;
+      if (incTable) incTable.innerHTML = incHtml;
 
+      if (incMob) {
+        incMob.innerHTML = periodIncomes.length ? periodIncomes.map(i => `
+          <div class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40 flex justify-between items-center text-xs">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                ${formatPartnerBadge(i.partner)}
+                <span class="text-[10px] text-slate-400">${i.date || ''}</span>
+              </div>
+              <span class="font-bold text-sm text-slate-900 dark:text-white">${esc(i.source)}</span>
+            </div>
+            <div class="text-right">
+              <span class="font-bold text-emerald-600 text-sm block">+${i.amount.toLocaleString()} ${curr}</span>
+              <button onclick="deleteIncome('${i.id}')" class="text-rose-500 text-[11px] mt-1">Видалити</button>
+            </div>
+          </div>
+        `).join('') : `<p class="text-center text-slate-400 text-xs py-4">Немає доходів за період</p>`;
+      }
+
+      // Витрати (таблиця та мобільні картки)
       const expTable = document.getElementById('expenses-table-body');
-      expTable.innerHTML = periodExpenses.length ? periodExpenses.map(e => `
+      const expMob = document.getElementById('expenses-mobile-list');
+
+      const expHtml = periodExpenses.length ? periodExpenses.map(e => `
         <tr class="border-b border-slate-100 dark:border-slate-800/60">
           <td class="py-3 text-xs text-slate-500">${e.date || '—'}</td>
           <td class="py-3 font-medium">${esc(e.title)}</td>
@@ -1616,6 +2063,28 @@
           <td class="py-3 text-right"><button onclick="deleteExpense('${e.id}')" class="text-rose-500 text-xs">Видалити</button></td>
         </tr>
       `).join('') : `<tr><td colspan="7" class="py-4 text-center text-slate-400 text-xs">Немає записів за період</td></tr>`;
+      if (expTable) expTable.innerHTML = expHtml;
+
+      if (expMob) {
+        expMob.innerHTML = periodExpenses.length ? periodExpenses.map(e => `
+          <div class="p-3.5 rounded-2xl border bg-slate-50 dark:bg-slate-900/40 space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="px-2 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-700 font-semibold text-slate-600 dark:text-slate-300">${esc(e.category)}</span>
+                <h4 class="font-bold text-sm mt-1 text-slate-900 dark:text-white">${esc(e.title)}</h4>
+              </div>
+              <div class="text-right">
+                <span class="font-bold text-rose-600 text-sm block">-${e.amount.toLocaleString()} ${curr}</span>
+                <span class="text-[10px] text-slate-400">${e.date || ''}</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-slate-200/60 dark:border-slate-800 text-xs">
+              <span class="text-slate-500">Платник: ${formatPartnerBadge(e.payer)} (${getSplitName(e.split)})</span>
+              <button onclick="deleteExpense('${e.id}')" class="text-rose-500 font-medium">Видалити</button>
+            </div>
+          </div>
+        `).join('') : `<p class="text-center text-slate-400 text-xs py-4">Немає витрат за період</p>`;
+      }
 
       const totalIncome = periodIncomes.reduce((s, i) => s + i.amount, 0);
       const totalExpenses = periodExpenses.filter(e => e.kind !== 'savings').reduce((s, e) => s + e.amount, 0);
@@ -1665,6 +2134,9 @@
         else if (e.payer === p2 || e.payer === 'Партнер 2') p1OwesP2 += p1Share;
       });
 
+      p1OwesP2 = applySettlements(p1OwesP2, state.settlements, currentPKey());
+      window.__net = p1OwesP2;
+      renderSettlementHistory();
       const badge = document.getElementById('settlement-badge'), text = document.getElementById('settlement-text'), details = document.getElementById('settlement-details');
       if (Math.abs(p1OwesP2) < 1) {
         badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800'; badge.innerText = 'Баланс врегульовано'; text.innerText = 'Ніхто нікому не винен'; details.innerText = 'Усі спільні витрати розподілено рівномірно.';
@@ -1688,7 +2160,7 @@
         expenseCategoryChartInstance = new Chart(catCanvas.getContext('2d'), {
           type: 'doughnut',
           data: { labels: Object.keys(catMap).length ? Object.keys(catMap) : ['Без витрат'], datasets: [{ data: Object.values(catMap).length ? Object.values(catMap) : [1], backgroundColor: usbChartColors(), borderWidth: 0 }] },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 12 } } } } }
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 11 } } } } }
         });
       }
 
@@ -1699,8 +2171,8 @@
         if (partnerContributionChartInstance) partnerContributionChartInstance.destroy();
         partnerContributionChartInstance = new Chart(partCanvas.getContext('2d'), {
           type: 'bar',
-          data: { labels: Object.keys(partnerMap), datasets: [{ data: Object.values(partnerMap), backgroundColor: [p1Color, p2Color], borderRadius: 12 }] },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: textColor }, grid: { display: false } }, y: { ticks: { color: textColor }, grid: { color: isDark ? '#334155' : '#f1f5f9' } } } }
+          data: { labels: Object.keys(partnerMap), datasets: [{ data: Object.values(partnerMap), backgroundColor: [p1Color, p2Color], borderRadius: 10 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: textColor, font: { size: 11 } }, grid: { display: false } }, y: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: isDark ? '#334155' : '#f1f5f9' } } } }
         });
       }
     }
@@ -1709,10 +2181,10 @@
     const sumBy = (arr, fn) => arr.reduce((s, x) => s + fn(x), 0);
 
     function buildPersonalShells() {
-      const card = 'bg-white dark:bg-slate-800/80 p-6 rounded-2xl border shadow-xs';
-      const inp = 'w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm';
+      const card = 'bg-white dark:bg-slate-800/80 p-4 sm:p-6 rounded-2xl border shadow-xs';
+      const inp = 'w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm';
       const lbl = 'block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300';
-      const btn = 'w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 px-4 rounded-xl text-sm shadow-sm';
+      const btn = 'w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 sm:py-2.5 px-4 rounded-xl text-sm shadow-sm min-h-[48px] sm:min-h-[40px]';
       const th = 'pb-3 font-semibold';
 
       ['p1', 'p2'].forEach(k => {
@@ -1721,95 +2193,97 @@
         el.innerHTML = `
           <div id="pp-${k}-lock" class="pp-lockbox hidden"></div>
           <div id="pp-${k}-head" class="${card} flex flex-col md:flex-row md:items-center justify-between gap-4"></div>
-          <div id="pp-${k}-kpi" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+          <div id="pp-${k}-kpi" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <div class="${card} space-y-4">
               <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-base font-bold flex items-center gap-2"><span>💎</span> Особисті цілі та скарбнички</h3>
-                <span class="text-xs text-slate-400">Приватні цілі</span>
+                <h3 class="text-sm sm:text-base font-bold flex items-center gap-2"><span>💎</span> Особисті цілі</h3>
+                <span class="text-[11px] text-slate-400">Скарбнички</span>
               </div>
               <form onsubmit="addPersonalGoal('${k}', event)" class="flex gap-2">
-                <input type="text" id="pp-${k}-goal-title" required placeholder="Назва (напр. iPad)" class="${inp}">
-                <input type="number" id="pp-${k}-goal-target" min="1" required placeholder="Ціль ₴" class="w-32 ${inp}">
-                <button type="submit" class="bg-slate-800 text-white font-medium px-4 rounded-xl text-xs shrink-0">+ Додати</button>
+                <input type="text" id="pp-${k}-goal-title" required placeholder="Назва (iPad)" class="${inp}">
+                <input type="number" id="pp-${k}-goal-target" min="1" required placeholder="Ціль ₴" class="w-28 ${inp}">
+                <button type="submit" class="bg-slate-800 text-white font-medium px-4 rounded-xl text-xs shrink-0 min-h-[44px]">+ Додати</button>
               </form>
-              <div id="pp-${k}-goals-list" class="space-y-3 pt-2"></div>
+              <div id="pp-${k}-goals-list" class="space-y-3 pt-1"></div>
             </div>
 
             <div class="${card} space-y-4">
               <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-base font-bold flex items-center gap-2"><span>🔄</span> Особисті передплати / регулярні</h3>
-                <span class="text-xs text-slate-400">Spotify, зал...</span>
+                <h3 class="text-sm sm:text-base font-bold flex items-center gap-2"><span>🔄</span> Особисті передплати</h3>
+                <span class="text-[11px] text-slate-400">Spotify, зал...</span>
               </div>
               <form onsubmit="addPersonalFixed('${k}', event)" class="flex gap-2">
-                <input type="text" id="pp-${k}-fx-title" required placeholder="Назва (напр. Spotify)" class="${inp}">
-                <input type="number" id="pp-${k}-fx-amount" min="1" required placeholder="Сума ₴" class="w-28 ${inp}">
-                <button type="submit" class="bg-slate-800 text-white font-medium px-4 rounded-xl text-xs shrink-0">+ Додати</button>
+                <input type="text" id="pp-${k}-fx-title" required placeholder="Назва" class="${inp}">
+                <input type="number" id="pp-${k}-fx-amount" min="1" required placeholder="Сума ₴" class="w-24 ${inp}">
+                <button type="submit" class="bg-slate-800 text-white font-medium px-4 rounded-xl text-xs shrink-0 min-h-[44px]">+ Додати</button>
               </form>
-              <div id="pp-${k}-fixed-list" class="space-y-2 pt-2"></div>
+              <div id="pp-${k}-fixed-list" class="space-y-2 pt-1"></div>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <div class="${card}">
-              <h3 class="text-lg font-bold mb-4">Додати особистий дохід</h3>
+              <h3 class="text-base sm:text-lg font-bold mb-3 sm:mb-4">Додати власний дохід</h3>
               <form onsubmit="addPersonalIncome('${k}', event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div><label class="${lbl}">Дата</label><input type="date" id="pp-${k}-inc-date" required value="${getTodayString()}" class="${inp}"></div>
-                <div><label class="${lbl}">Джерело</label><input type="text" id="pp-${k}-inc-source" required placeholder="Підробіток..." class="${inp}"></div>
+                <div><label class="${lbl}">Джерело</label><input type="text" id="pp-${k}-inc-source" required placeholder="Підробіток" class="${inp}"></div>
                 <div><label class="${lbl}">Сума (<span class="currency-symbol">₴</span>)</label><input type="number" id="pp-${k}-inc-amount" min="1" required placeholder="2000" class="${inp}"></div>
-                <div class="flex items-end"><button type="submit" class="${btn}">+ Додати</button></div>
+                <div class="flex items-end pt-1"><button type="submit" class="${btn}">+ Додати</button></div>
               </form>
             </div>
 
             <div class="${card}">
-              <h3 class="text-lg font-bold mb-4">Додати особисту витрату</h3>
+              <h3 class="text-base sm:text-lg font-bold mb-3 sm:mb-4">Додати особисту витрату</h3>
               <form onsubmit="addPersonalExpense('${k}', event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div><label class="${lbl}">Дата</label><input type="date" id="pp-${k}-exp-date" required value="${getTodayString()}" class="${inp}"></div>
-                <div><label class="${lbl}">Назва</label><input type="text" id="pp-${k}-exp-title" required placeholder="Покупка..." class="${inp}"></div>
+                <div><label class="${lbl}">Назва</label><input type="text" id="pp-${k}-exp-title" required placeholder="Покупка" class="${inp}"></div>
                 <div><label class="${lbl}">Сума (<span class="currency-symbol">₴</span>)</label><input type="number" id="pp-${k}-exp-amount" min="1" required placeholder="800" class="${inp}"></div>
-                <div><label class="${lbl}">Категорія</label><select id="pp-${k}-exp-cat" class="${inp}"></select></div>
-                <div class="sm:col-span-2 flex items-end"><button type="submit" class="${btn}">+ Додати</button></div>
+                <div class="sm:col-span-2"><label class="${lbl}">Категорія</label><select id="pp-${k}-exp-cat" class="${inp}"></select></div>
+                <div class="flex items-end pt-1"><button type="submit" class="${btn}">+ Додати</button></div>
               </form>
             </div>
           </div>
 
           <div class="${card} space-y-4">
-            <div class="flex justify-between items-center border-b pb-3">
-              <h3 class="text-base font-bold flex items-center gap-2"><span>🏷️</span> Власні категорії та ліміти витрат</h3>
-              <form onsubmit="addPersonalCategory('${k}', event)" class="flex gap-2">
-                <input type="text" id="pp-${k}-new-cat" placeholder="Нова персональна категорія..." class="p-2 text-xs rounded-xl border bg-slate-50 dark:bg-slate-900 w-48">
-                <button type="submit" class="bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs">+ Додати</button>
+            <div class="flex justify-between items-center border-b pb-3 flex-wrap gap-2">
+              <h3 class="text-sm sm:text-base font-bold flex items-center gap-2"><span>🏷️</span> Власні категорії та ліміти</h3>
+              <form onsubmit="addPersonalCategory('${k}', event)" class="flex gap-2 w-full sm:w-auto">
+                <input type="text" id="pp-${k}-new-cat" placeholder="Нова категорія..." class="p-2.5 text-xs rounded-xl border bg-slate-50 dark:bg-slate-900 flex-1 sm:w-48">
+                <button type="submit" class="bg-slate-800 text-white px-3.5 py-2.5 rounded-xl text-xs shrink-0">+ Додати</button>
               </form>
             </div>
             <div id="pp-${k}-categories-limits" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <div class="${card}">
-              <h3 class="text-lg font-bold mb-4">Мої доходи</h3>
+              <h3 class="text-base sm:text-lg font-bold mb-3 sm:mb-4">Мої доходи</h3>
               <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-left text-sm">
+                <table class="w-full text-left text-sm hidden sm:table">
                   <thead><tr class="border-b text-slate-500"><th class="${th}">Дата</th><th class="${th}">Джерело</th><th class="${th}">Сума</th><th class="${th} text-right">Дії</th></tr></thead>
                   <tbody id="pp-${k}-inc-body"></tbody>
                 </table>
+                <div id="pp-${k}-inc-mob" class="space-y-2 sm:hidden"></div>
               </div>
             </div>
             <div class="${card}">
-              <h3 class="text-lg font-bold mb-4">Мої витрати</h3>
+              <h3 class="text-base sm:text-lg font-bold mb-3 sm:mb-4">Мої витрати</h3>
               <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-left text-sm">
+                <table class="w-full text-left text-sm hidden sm:table">
                   <thead><tr class="border-b text-slate-500"><th class="${th}">Дата</th><th class="${th}">Назва</th><th class="${th}">Категорія</th><th class="${th}">Сума</th><th class="${th} text-right">Дії</th></tr></thead>
                   <tbody id="pp-${k}-exp-body"></tbody>
                 </table>
+                <div id="pp-${k}-exp-mob" class="space-y-2 sm:hidden"></div>
               </div>
             </div>
           </div>
 
           <div class="${card}">
-            <h3 class="font-bold text-base mb-4 flex items-center gap-2"><span>🍰</span> Структура особистих витрат за категоріями</h3>
+            <h3 class="font-bold text-sm sm:text-base mb-3 sm:mb-4 flex items-center gap-2"><span>🍰</span> Структура особистих витрат</h3>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-              <div class="relative h-64"><canvas id="pp-${k}-chart"></canvas></div>
+              <div class="relative h-56 sm:h-64"><canvas id="pp-${k}-chart"></canvas></div>
               <div id="pp-${k}-cats" class="space-y-3"></div>
             </div>
           </div>
@@ -1898,7 +2372,7 @@
         options: {
           responsive: true, maintainAspectRatio: false, cutout: '62%',
           plugins: {
-            legend: { position: 'bottom', labels: { color: isDark ? '#94a3b8' : '#64748b', font: { family: 'Plus Jakarta Sans', size: 12 } } },
+            legend: { position: 'bottom', labels: { color: isDark ? '#94a3b8' : '#64748b', font: { family: 'Plus Jakarta Sans', size: 11 } } },
             tooltip: { enabled: has, callbacks: { label: c => ` ${c.label}: ${Math.round(c.parsed).toLocaleString()} ${curr} (${Math.round(c.parsed / total * 100)}%)` } }
           }
         }
@@ -1913,7 +2387,7 @@
       const totalExp = sumBy(periodExpenses, e => e.amount);
       const { periodKey } = getPeriodRange();
       const rowCls = 'border-b border-slate-100 dark:border-slate-800/60';
-      const empty = (cols, text) => `<tr><td colspan="${cols}" class="py-4 text-center text-slate-400 text-xs">${text}</td></tr>`;
+      const emptyMsg = '<p class="text-center text-slate-400 text-xs py-4">Немає записів</p>';
 
       ['p1', 'p2'].forEach(k => {
         const head = document.getElementById(`pp-${k}-head`);
@@ -1926,45 +2400,46 @@
 
         const tabBtn = document.getElementById('btn-' + k);
         if (tabBtn) tabBtn.innerHTML = `<span>${avatar}</span> ${name}`;
+        const mm = document.getElementById('mob-more-' + k); if (mm) mm.innerHTML = `<span>${avatar}</span> ${name}`;
         renderLockBox(k);
         if (isLocked(k)) { const t = document.getElementById(`pp-${k}-lock-title`); if (t) t.innerText = `${avatar} ${isP1 ? getPartner1Name() : getPartner2Name()}: розділ заблоковано`; return; }
 
         head.style.borderLeft = `4px solid ${color}`;
         head.innerHTML = `
-          <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0" style="background:${color}22">${avatar}</div>
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0" style="background:${color}22">${avatar}</div>
             <div>
-              <div class="flex items-center gap-2">
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Особистий бюджет: ${name}</h2>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h2 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white">${name}</h2>
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${d.mode === 'autonomous' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
-                  ${d.mode === 'autonomous' ? '⚡ Автономний режим' : '🔗 Інтегрований з парою'}
+                  ${d.mode === 'autonomous' ? '⚡ Автономний' : '🔗 Інтегрований'}
                 </span>
               </div>
-              <p class="text-xs text-slate-500 mt-0.5">${d.mode === 'autonomous' ? 'Незалежний трекер: без спільних доходів і частки у спільних витратах' : 'Дохід мінус частка у спільних витратах пари та особисті витрати'}</p>
+              <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">${d.mode === 'autonomous' ? 'Без спільних доходів' : 'Дохід мінус частка у спільних витратах'}</p>
             </div>
           </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <button onclick="togglePersonalMode('${k}')" class="px-3 py-1.5 rounded-xl text-xs font-medium border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100">
-              ${d.mode === 'autonomous' ? 'Переключити на Інтегрований' : 'Переключити на Автономний'}
+          <div class="flex items-center gap-2 shrink-0 flex-wrap">
+            <button onclick="togglePersonalMode('${k}')" class="px-3 py-2 rounded-xl text-xs font-medium border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+              ${d.mode === 'autonomous' ? 'У інтегрований' : 'В автономний'}
             </button>
             ${pinOf(k)
-              ? `<button onclick="lockPartner('${k}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-700/60 transition">🔒 Заблокувати</button>`
-              : `<button onclick="switchTab('settings')" class="px-3 py-1.5 rounded-xl text-xs text-slate-500">🔓 Без PIN</button>`}
+              ? `<button onclick="lockPartner('${k}')" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-700/60 transition">🔒 Заблокувати</button>`
+              : `<button onclick="switchTab('settings')" class="px-3 py-2 rounded-xl text-xs text-slate-500">🔓 Без PIN</button>`}
           </div>
         `;
 
         const kpi = (label, val, sub, cls = 'text-slate-900 dark:text-white') => `
-          <div class="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border shadow-xs">
-            <div class="text-slate-500 text-xs font-medium">${label}</div>
-            <h3 class="text-2xl font-bold mt-2 ${cls}">${val}</h3>
-            <p class="text-xs text-slate-400 mt-1">${sub}</p>
+          <div class="bg-white dark:bg-slate-800/80 p-4 sm:p-5 rounded-2xl border shadow-xs">
+            <div class="text-slate-500 text-[11px] sm:text-xs font-medium">${label}</div>
+            <h3 class="text-lg sm:text-2xl font-bold mt-1.5 sm:mt-2 ${cls}">${val}</h3>
+            <p class="text-[11px] text-slate-400 mt-1">${sub}</p>
           </div>`;
         const rate = d.income > 0 ? Math.round(d.left / d.income * 100) : 0;
         document.getElementById(`pp-${k}-kpi`).innerHTML =
-          kpi('Особистий Дохід', f(d.income), `власні: ${f(d.extra)}`) +
-          kpi(d.mode === 'autonomous' ? 'Спільна частка' : 'Частка у спільних', d.mode === 'autonomous' ? '0 ' + curr : f(d.share), d.mode === 'autonomous' ? 'відключено' : `загальні: ${f(totalExp)}`) +
+          kpi('Дохід', f(d.income), `власні: ${f(d.extra)}`) +
+          kpi(d.mode === 'autonomous' ? 'Спільна частка' : 'Частка у спільних', d.mode === 'autonomous' ? '0 ' + curr : f(d.share), d.mode === 'autonomous' ? 'вимкнено' : `загальні: ${f(totalExp)}`) +
           kpi('Особисті витрати', f(d.spent), `записів: ${d.pe.length}`) +
-          kpi('Вільний залишок', f(d.left), `Норма заощаджень: ${rate}%`, d.left < 0 ? 'text-rose-600' : 'text-emerald-600');
+          kpi('Вільний залишок', f(d.left), `Норма: ${rate}%`, d.left < 0 ? 'text-rose-600' : 'text-emerald-600');
 
         const pGoals = (state.personalGoals && state.personalGoals[k]) || [];
         const goalsContainer = document.getElementById(`pp-${k}-goals-list`);
@@ -1984,8 +2459,8 @@
                   <div class="bg-pink-500 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
                 </div>
                 <div class="flex justify-end gap-2 text-[11px]">
-                  <button onclick="depositToPersonalGoal('${k}', '${g.id}', 500)" class="px-2 py-1 rounded bg-white dark:bg-slate-800 border text-slate-700 dark:text-slate-300">+500 ${curr}</button>
-                  <button onclick="transferFreeBalanceToGoal('${k}', '${g.id}')" class="px-2 py-1 rounded bg-pink-500 text-white font-semibold">Внести залишок</button>
+                  <button onclick="depositToPersonalGoal('${k}', '${g.id}', 500)" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border text-slate-700 dark:text-slate-300">+500 ${curr}</button>
+                  <button onclick="transferFreeBalanceToGoal('${k}', '${g.id}')" class="px-2.5 py-1.5 rounded-lg bg-pink-500 text-white font-semibold">Внести залишок</button>
                 </div>
               </div>
             `;
@@ -2004,7 +2479,7 @@
                   <span class="text-slate-400">${fx.amount.toLocaleString()} ${curr}</span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <button onclick="markPersonalFixedPaid('${k}', '${fx.id}')" class="px-2.5 py-1 rounded-lg font-semibold transition ${isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-pink-500 text-white'}">
+                  <button onclick="markPersonalFixedPaid('${k}', '${fx.id}')" class="px-3 py-1.5 rounded-lg font-semibold transition ${isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-pink-500 text-white'}">
                     ${isPaid ? '✅ Сплачено' : '💳 Сплатити'}
                   </button>
                   <button onclick="deletePersonalFixed('${k}', '${fx.id}')" class="text-rose-500">✕</button>
@@ -2034,7 +2509,7 @@
                 <div class="flex items-center gap-1.5">
                   <input type="number" min="0" value="${lim || ''}" placeholder="Ліміт ${curr}" 
                     onchange="updatePersonalCategoryLimit('${k}', '${esc(cat)}', this.value)" 
-                    class="w-full p-1.5 rounded-lg border bg-white dark:bg-slate-900 text-xs">
+                    class="w-full p-2 rounded-lg border bg-white dark:bg-slate-900 text-xs">
                 </div>
                 ${lim > 0 ? `
                   <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
@@ -2057,16 +2532,34 @@
 
         const sharedRows = d.mode === 'integrated' ? d.shared.map(i => `<tr class="${rowCls}"><td class="py-3 text-xs text-slate-500">${i.date || '—'}</td><td class="py-3">${esc(i.source)} <span class="text-[10px] text-slate-400">спільний</span></td><td class="py-3 font-semibold text-emerald-600">+${i.amount.toLocaleString()} ${curr}</td><td></td></tr>`) : [];
         const ownRows = d.pi.map(i => `<tr class="${rowCls}"><td class="py-3 text-xs text-slate-500">${i.date || '—'}</td><td class="py-3">${esc(i.source)}</td><td class="py-3 font-semibold text-emerald-600">+${i.amount.toLocaleString()} ${curr}</td><td class="text-right"><button onclick="deletePersonal('personalIncomes', '${i.id}')" class="text-rose-500 text-xs">Видалити</button></td></tr>`);
-        document.getElementById(`pp-${k}-inc-body`).innerHTML = sharedRows.concat(ownRows).length ? sharedRows.concat(ownRows).join('') : empty(4, 'Немає доходів');
+        const allInc = sharedRows.concat(ownRows);
+        
+        document.getElementById(`pp-${k}-inc-body`).innerHTML = allInc.length ? allInc.join('') : emptyMsg;
+        document.getElementById(`pp-${k}-inc-mob`).innerHTML = allInc.length ? (d.mode === 'integrated' ? d.shared.map(i => `<div class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40 flex justify-between items-center text-xs"><div><span class="font-bold block">${esc(i.source)}</span><span class="text-[10px] text-slate-400">${i.date || ''} (спільний)</span></div><span class="font-bold text-emerald-600">+${i.amount.toLocaleString()} ${curr}</span></div>`).join('') : '') + d.pi.map(i => `<div class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40 flex justify-between items-center text-xs"><div><span class="font-bold block">${esc(i.source)}</span><span class="text-[10px] text-slate-400">${i.date || ''}</span></div><div class="text-right"><span class="font-bold text-emerald-600 block">+${i.amount.toLocaleString()} ${curr}</span><button onclick="deletePersonal('personalIncomes', '${i.id}')" class="text-rose-500 text-[10px]">Видалити</button></div></div>`).join('') : emptyMsg;
 
-        document.getElementById(`pp-${k}-exp-body`).innerHTML = d.pe.length ? d.pe.map(x => `
+        const allExp = d.pe.map(x => `
           <tr class="${rowCls}">
             <td class="py-3 text-xs text-slate-500">${x.date || '—'}</td>
             <td class="py-3 font-medium">${esc(x.title)}</td>
             <td class="py-3"><span class="px-2.5 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-700">${esc(x.category)}</span></td>
             <td class="py-3 font-semibold text-rose-600">-${x.amount.toLocaleString()} ${curr}</td>
             <td class="py-3 text-right"><button onclick="deletePersonal('personalExpenses', '${x.id}')" class="text-rose-500 text-xs">Видалити</button></td>
-          </tr>`).join('') : empty(5, 'Немає витрат');
+          </tr>`);
+        document.getElementById(`pp-${k}-exp-body`).innerHTML = allExp.length ? allExp.join('') : emptyMsg;
+        
+        document.getElementById(`pp-${k}-exp-mob`).innerHTML = d.pe.length ? d.pe.map(x => `
+          <div class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-900/40 flex justify-between items-center text-xs">
+            <div>
+              <span class="px-2 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-700 font-semibold">${esc(x.category)}</span>
+              <span class="font-bold block mt-1">${esc(x.title)}</span>
+              <span class="text-[10px] text-slate-400">${x.date || ''}</span>
+            </div>
+            <div class="text-right">
+              <span class="font-bold text-rose-600 block">-${x.amount.toLocaleString()} ${curr}</span>
+              <button onclick="deletePersonal('personalExpenses', '${x.id}')" class="text-rose-500 text-[10px] mt-1">Видалити</button>
+            </div>
+          </div>
+        `).join('') : emptyMsg;
 
         const byCat = {}; d.pe.forEach(x => { byCat[x.category] = (byCat[x.category] || 0) + x.amount; });
         const entries = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
@@ -2113,11 +2606,11 @@
       if (!box.dataset.ready) {
         box.dataset.ready = '1';
         box.innerHTML = `
-          <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl border shadow-xl max-w-sm mx-auto text-center space-y-4">
+          <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl border shadow-xl max-w-sm mx-auto text-center space-y-4">
             <div class="text-4xl">🔒</div>
             <h3 id="pp-${k}-lock-title" class="text-lg font-bold"></h3>
-            <input type="password" inputmode="numeric" maxlength="8" id="pp-${k}-pin" autocomplete="off" onkeydown="if(event.key==='Enter')unlockPartner('${k}')" class="w-full p-3 rounded-xl border bg-slate-50 dark:bg-slate-900 text-center text-lg tracking-widest">
-            <button onclick="unlockPartner('${k}')" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2.5 rounded-xl text-sm shadow-sm">Розблокувати</button>
+            <input type="password" inputmode="numeric" maxlength="8" id="pp-${k}-pin" autocomplete="off" onkeydown="if(event.key==='Enter')unlockPartner('${k}')" class="w-full p-3.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-center text-lg tracking-widest">
+            <button onclick="unlockPartner('${k}')" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 rounded-xl text-sm shadow-sm min-h-[48px]">Розблокувати</button>
             <p id="pp-${k}-pin-err" class="text-xs text-rose-500 min-h-4"></p>
             <button onclick="forgotPin('${k}')" class="text-xs text-slate-500 hover:underline">Забули PIN?</button>
           </div>`;
@@ -2142,15 +2635,15 @@
     function buildPrivacySettings() {
       const host = document.getElementById('privacy-settings');
       if (!host) return;
-      const inp = 'w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm';
+      const inp = 'w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm';
       host.innerHTML = ['p1', 'p2'].map(k => `
-        <div class="p-5 rounded-2xl border space-y-3">
+        <div class="p-4 sm:p-5 rounded-2xl border space-y-3">
           <div class="flex justify-between items-center"><span class="font-semibold text-sm">${k === 'p1' ? getPartner1Name() : getPartner2Name()}</span><span id="pin-st-${k}" class="text-xs"></span></div>
           <input type="password" inputmode="numeric" maxlength="8" id="pin-cur-${k}" placeholder="Поточний PIN" class="${inp}">
           <input type="password" inputmode="numeric" maxlength="8" id="pin-new-${k}" placeholder="Новий PIN (4-8 цифр)" class="${inp}">
-          <div class="flex gap-2">
-            <button type="button" onclick="savePin('${k}')" class="flex-1 bg-pink-500 text-white py-2 rounded-xl text-sm font-semibold">Зберегти</button>
-            <button type="button" onclick="removePin('${k}')" class="px-3 py-2 text-rose-600 border rounded-xl text-sm">Прибрати</button>
+          <div class="flex gap-2 pt-1">
+            <button type="button" onclick="savePin('${k}')" class="flex-1 bg-pink-500 text-white py-3 rounded-xl text-sm font-semibold min-h-[44px]">Зберегти</button>
+            <button type="button" onclick="removePin('${k}')" class="px-4 py-3 text-rose-600 border rounded-xl text-sm min-h-[44px]">Прибрати</button>
           </div>
         </div>`).join('');
     }
@@ -2164,36 +2657,29 @@
       });
     }
 
-    
-
-    // --- v3.1: допоміжні функції ---
     const PERS_KEYS = ['personalGoals', 'personalFixed', 'personalCategories', 'personalCategoryLimits', 'personalModes'];
     const FREQ = { week: 'Щотижня', month: 'Щомісяця', quarter: 'Щокварталу', year: 'Щороку' };
 
     function toLocalISO(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
     function parseLocalDate(str) { const p = String(str).split('-').map(Number); return new Date(p[0], (p[1] || 1) - 1, p[2] || 1, 12); }
 
-    // Дата проведення платежу: сьогодні, якщо воно у вибраному періоді, інакше початок періоду
     function dateInPeriod() {
       const { start, end } = getPeriodRange(), n = new Date();
       return (n >= start && n <= end) ? toLocalISO(n) : toLocalISO(start);
     }
 
-    // Записам без дати призначаємо сьогоднішню, щоб вони не потрапляли в усі періоди
     function normalizeDates() {
       const t = getTodayString(); let changed = false;
       ['incomes', 'expenses', 'personalIncomes', 'personalExpenses'].forEach(p => (state[p] || []).forEach(x => { if (!x.date) { x.date = t; changed = true; } }));
       return changed;
     }
 
-    // Якщо згенеровану витрату видалили, знімаємо позначку «сплачено»
     function unmarkPaid(eid) {
       const strip = fx => { fx.paidPeriods = (fx.paidPeriods || []).filter(p => eid !== 'exp_fx_' + fx.id + '_' + p && eid !== 'pexp_fx_' + fx.id + '_' + p); };
       (state.fixedExpenses || []).forEach(strip);
       ['p1', 'p2'].forEach(k => ((state.personalFixed || {})[k] || []).forEach(strip));
     }
 
-    // Експорт без даних заблокованих розділів і без хешів PIN
     function stripLocked(src) {
       const c = JSON.parse(JSON.stringify(src));
       ['p1', 'p2'].filter(isLocked).forEach(k => {
@@ -2205,7 +2691,6 @@
       return c;
     }
 
-    // Після імпорту, демо чи очищення повертаємо PIN і дані заблокованих розділів
     function protectLocked(prev, locked) {
       if (!state.settings) state.settings = Object.assign({}, defaultSettings);
       if (prev.settings && prev.settings.pins) state.settings.pins = prev.settings.pins; else delete state.settings.pins;
@@ -2247,7 +2732,7 @@
 
     function forgotPin(k) {
       const name = k === 'p1' ? getPartner1Name() : getPartner2Name();
-      showConfirmModal('Скинути PIN?', `Щоб захист не можна було обійти, скидання PIN видалить усі особисті дані розділу «${name}». Спільні доходи, витрати й цілі не зачіпаються.`, () => {
+      showConfirmModal('Скинути PIN?', `Скидання PIN видалить особисті дані розділу «${name}». Спільні дані не зачіпаються.`, () => {
         state.personalIncomes = (state.personalIncomes || []).filter(x => x.owner !== k);
         state.personalExpenses = (state.personalExpenses || []).filter(x => x.owner !== k);
         ['personalGoals', 'personalFixed'].forEach(p => { if (state[p]) state[p][k] = []; });
@@ -2267,12 +2752,11 @@
       saveToCloud(); renderAll();
     }
 
-    // Поле «Платить» для спільних регулярних платежів
     function buildFixedPayerField() {
       const sc = document.getElementById('fx-scope');
       if (!sc || document.getElementById('fx-payer')) return;
       const host = (sc.parentElement && sc.parentElement.querySelector('label')) ? sc.parentElement : sc;
-      host.insertAdjacentHTML('afterend', '<div><label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Платить (для спільних)</label><select id="fx-payer" class="w-full p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select></div>');
+      host.insertAdjacentHTML('afterend', '<div><label class="block text-xs font-medium mb-1.5 text-slate-600 dark:text-slate-300">Платить (для спільних)</label><select id="fx-payer" class="w-full p-3 sm:p-2.5 rounded-xl border bg-slate-50 dark:bg-slate-900 text-sm"></select></div>');
     }
     function updateFixedPayerOptions() {
       const sel = document.getElementById('fx-payer');
@@ -2282,10 +2766,11 @@
       sel.value = (cur === p1 || cur === p2) ? cur : p1;
     }
 
-    
-window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('income-date').value = getTodayString();
       document.getElementById('exp-date').value = getTodayString();
+      installUndo();
+      renderBackups();
       buildFixedPayerField();
       buildPersonalShells();
       buildPrivacySettings();
@@ -2295,6 +2780,3 @@ window.addEventListener('DOMContentLoaded', () => {
   </script>
 </body>
 </html>
-```
-
-Ось згенерований `index.html` файл, готовий до запуску або збереження!
