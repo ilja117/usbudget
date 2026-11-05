@@ -228,6 +228,50 @@
       document.addEventListener('DOMContentLoaded', function () { apply(); buildPicker(); });
     }());
   </script>
+  <style>
+  /* Резервний CSS */
+  iframe[src*="netlify"], a[href*="netlify.com"], [id*="netlify"] {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+</style>
+
+<script>
+  // Скрипт для динамічного видалення бейджа Netlify
+  window.addEventListener('DOMContentLoaded', () => {
+    const removeNetlifyBadge = () => {
+      // Шукаємо елементи, які містять згадки про Netlify
+      const elements = document.querySelectorAll('iframe, div, a, span');
+      elements.forEach(el => {
+        if (
+          (el.innerHTML && el.innerHTML.includes('Powered by Netlify')) ||
+          (el.src && el.src.includes('netlify')) ||
+          (el.href && el.href.includes('netlify.com')) ||
+          (el.className && typeof el.className === 'string' && el.className.toLowerCase().includes('netlify'))
+        ) {
+          // Піднімаємось до контейнера, щоб видалити всю плаваючу плашку разом із кнопкою закриття
+          let target = el;
+          while (
+            target && 
+            target !== document.body && 
+            target.parentElement && 
+            target.parentElement.childElementCount <= 2 && 
+            target.parentElement.offsetHeight < 150
+          ) {
+            target = target.parentElement;
+          }
+          target.remove();
+        }
+      });
+    };
+
+    // Видаляємо одразу при завантаженні та під час будь-яких змін у DOM
+    removeNetlifyBadge();
+    const observer = new MutationObserver(removeNetlifyBadge);
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+</script>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
 
