@@ -238,7 +238,34 @@ button#nl-badge, .nl-badge {
     pointer-events: none !important;
   }
 </style>
+<script>
+  (function() {
+    const hideBadge = () => {
+      // Шукаємо кнопку або будь-який елемент із класом/id бейджа
+      const badge = document.getElementById('nl-badge') || document.querySelector('.nl-badge');
+      if (badge) {
+        badge.remove();
+      }
+      // Додатковий пошук за текстом або атрибутами
+      document.querySelectorAll('button, div, a').forEach(el => {
+        if (el.getAttribute('aria-label')?.includes('Netlify') || el.innerHTML.includes('Powered by Netlify')) {
+          el.remove();
+        }
+      });
+    };
 
+    // Запускаємо одразу і ставимо спостерігач
+    if (document.body) {
+      hideBadge();
+      new MutationObserver(hideBadge).observe(document.body, { childList: true, subtree: true });
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        hideBadge();
+        new MutationObserver(hideBadge).observe(document.body, { childList: true, subtree: true });
+      });
+    }
+  })();
+</script>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
 
