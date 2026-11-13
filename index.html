@@ -138,7 +138,7 @@ a{color:var(--blue)}
       <tr><td>DC‑виходи</td><td>USB‑C PD 100 Вт ×2, USB‑A QC ×2, прикурювач 12 В, DC5521 ×2</td></tr>
       <tr><td>Моніторинг</td><td>кольоровий дисплей + Bluetooth (BMS) + Wi‑Fi (ESP32 / Home Assistant)</td></tr>
       <tr><td>Вага / формат</td><td>компакт, ≈15 кг, ручка зверху</td></tr>
-      <tr><td>Бюджет</td><td>до 20 000 грн (вкладається варіант «Економ»)</td></tr>
+      <tr><td>Бюджет</td><td>до 20 000 грн. Після перевірки цін найдешевший варіант коштує ≈24 тис.</td></tr>
       <tr><td>? Сонце / авто</td><td>не потрібно зараз; місце під MPPT залишено на задній панелі</td></tr>
     </tbody></table>
   </div>
@@ -300,7 +300,7 @@ a{color:var(--blue)}
     <path d="M180 312 H220" class="w-dcp"/><path d="M420 312 H450 V250" class="w-dcp"/>
     <path d="M180 350 H200 V395 H220" class="w-dcn"/><path d="M350 395 H470 V262" class="w-dcn"/>
     <!-- outputs -->
-    <rect x="600" y="300" width="270" height="50" rx="8" class="w-box"/><text x="735" y="322" text-anchor="middle" class="t-h">Запобіжник 20 А → DC‑виходи</text><text x="735" y="339" text-anchor="middle" class="t-s">USB‑C PD 100 Вт ×2 · USB‑A ×2 · 12 В · DC5521</text>
+    <rect x="600" y="300" width="270" height="50" rx="8" class="w-box"/><text x="735" y="322" text-anchor="middle" class="t-h">Блок запобіжників → реле → DC‑виходи</text><text x="735" y="339" text-anchor="middle" class="t-s">детально — на схемі DC‑виходів нижче</text>
     <rect x="600" y="368" width="270" height="50" rx="8" class="w-box"/><text x="735" y="390" text-anchor="middle" class="t-h">Buck 5 В → ESP32 + TFT 3.5″</text><text x="735" y="407" text-anchor="middle" class="t-s">Wi‑Fi, ESPHome / Home Assistant</text>
     <path d="M640 250 V300" class="w-dcp"/><path d="M820 262 V300" class="w-dcn"/>
     <path d="M580 250 V393 H600" class="w-dcp" style="stroke-width:1.6"/>
@@ -309,9 +309,69 @@ a{color:var(--blue)}
   </div>
 </section>
 
+
+<section class="card" id="dc">
+  <h2>Схема DC‑виходів: USB, 12 В, дисплей</h2>
+  <p class="sub">Усі низьковольтні виходи живляться від тієї ж DC‑шини 12.8 В, що й інвертор, але через власні запобіжники. Три групи: <b>USB</b> і <b>12 В</b> вмикаються кнопками на передній панелі через автомобільні реле, а <b>логіка</b> (дисплей, ESP32, вентилятори) живиться завжди, поки увімкнена BMS.</p>
+  <div class="scroll">
+  <svg class="draw" viewBox="0 0 900 570" style="min-width:760px" role="img" aria-label="Схема DC-виходів">
+    <!-- шини -->
+    <path d="M60 30 V465" class="w-dcp"/><text x="20" y="22" class="t-s">DC+ (після MRBF 200 А і вимикача)</text>
+    <path d="M100 50 V540 H875 V80" class="w-dcn"/><text x="108" y="557" class="t-s">DC− шина (BMS P−). Мінуси всіх виходів — сюди, тим самим перерізом, що й плюс. Ніколи не на B− батареї!</text>
+    <!-- групові запобіжники -->
+    <path d="M60 150 H150" class="w-dcp" style="stroke-width:2.4"/><rect x="150" y="132" width="90" height="36" rx="6" class="w-box"/><text x="195" y="148" text-anchor="middle" class="t-h">F1 25 А</text><text x="195" y="161" text-anchor="middle" class="t-s">група USB</text>
+    <path d="M60 325 H150" class="w-dcp" style="stroke-width:2.4"/><rect x="150" y="307" width="90" height="36" rx="6" class="w-box"/><text x="195" y="323" text-anchor="middle" class="t-h">F2 20 А</text><text x="195" y="336" text-anchor="middle" class="t-s">група 12 В</text>
+    <path d="M60 465 H150" class="w-dcp" style="stroke-width:1.6"/><rect x="150" y="447" width="90" height="36" rx="6" class="w-box"/><text x="195" y="463" text-anchor="middle" class="t-h">F3 3 А</text><text x="195" y="476" text-anchor="middle" class="t-s">логіка</text>
+    <text x="70" y="143" class="t-s">4 мм²</text><text x="70" y="318" class="t-s">4 мм²</text><text x="106" y="458" class="t-s">0.75 мм²</text>
+    <!-- реле -->
+    <path d="M240 150 H290" class="w-dcp" style="stroke-width:2.4"/><rect x="290" y="112" width="110" height="76" rx="8" class="w-acc"/><text x="345" y="138" text-anchor="middle" class="t-h">Реле USB</text><text x="345" y="155" text-anchor="middle" class="t-s">12 В 40 А (30→87)</text><text x="345" y="170" text-anchor="middle" class="t-s">котушка 85/86</text>
+    <path d="M240 325 H290" class="w-dcp" style="stroke-width:2.4"/><rect x="290" y="287" width="110" height="76" rx="8" class="w-acc"/><text x="345" y="313" text-anchor="middle" class="t-h">Реле 12 В</text><text x="345" y="330" text-anchor="middle" class="t-s">12 В 40 А (30→87)</text><text x="345" y="345" text-anchor="middle" class="t-s">котушка 85/86</text>
+    <!-- кнопки -->
+    <rect x="270" y="395" width="150" height="40" rx="8" class="w-box"/><text x="345" y="412" text-anchor="middle" class="t-h">Кнопки «USB», «12V»</text><text x="345" y="426" text-anchor="middle" class="t-s">16 мм, з фіксацією, LED</text>
+    <path d="M300 395 V363" class="w-sig"/><path d="M410 395 V200 H380 V188" class="w-sig"/>
+    <text x="232" y="385" class="t-s">0.5 мм², ≈0.15 А</text>
+    <!-- розгалуження -->
+    <path d="M400 150 H425 M425 80 V220" class="w-dcp" style="stroke-width:2.4"/>
+    <path d="M400 325 H425 M425 290 V360" class="w-dcp" style="stroke-width:2.4"/>
+    <path d="M240 465 H425 M425 430 V500" class="w-dcp" style="stroke-width:1.6"/>
+    <!-- гілкові запобіжники + виходи -->
+    <g>
+      <path d="M425 80 H450 M540 80 H590" class="w-dcp" style="stroke-width:1.8"/><rect x="450" y="66" width="90" height="28" rx="6" class="w-box"/><text x="495" y="84" text-anchor="middle">10 А</text><text x="545" y="74" class="t-s">1.5 мм²</text>
+      <rect x="590" y="58" width="260" height="44" rx="8" class="w-box"/><text x="720" y="76" text-anchor="middle" class="t-h">USB‑C PD 100 Вт #1</text><text x="720" y="92" text-anchor="middle" class="t-s">вхід 9–30 В, ≈8.5 А при 100 Вт</text>
+      <path d="M425 150 H450 M540 150 H590" class="w-dcp" style="stroke-width:1.8"/><rect x="450" y="136" width="90" height="28" rx="6" class="w-box"/><text x="495" y="154" text-anchor="middle">10 А</text><text x="545" y="144" class="t-s">1.5 мм²</text>
+      <rect x="590" y="128" width="260" height="44" rx="8" class="w-box"/><text x="720" y="146" text-anchor="middle" class="t-h">USB‑C PD 100 Вт #2</text><text x="720" y="162" text-anchor="middle" class="t-s">вхід 9–30 В, ≈8.5 А при 100 Вт</text>
+      <path d="M425 220 H450 M540 220 H590" class="w-dcp" style="stroke-width:1.4"/><rect x="450" y="206" width="90" height="28" rx="6" class="w-box"/><text x="495" y="224" text-anchor="middle">5 А</text><text x="545" y="214" class="t-s">0.75 мм²</text>
+      <rect x="590" y="198" width="260" height="44" rx="8" class="w-box"/><text x="720" y="216" text-anchor="middle" class="t-h">USB‑A QC3.0 × 2</text><text x="720" y="232" text-anchor="middle" class="t-s">2 × 18 Вт, ≈3 А</text>
+      <path d="M425 290 H450 M540 290 H590" class="w-dcp" style="stroke-width:2.2"/><rect x="450" y="276" width="90" height="28" rx="6" class="w-box"/><text x="495" y="294" text-anchor="middle">15 А</text><text x="545" y="284" class="t-s">2.5 мм²</text>
+      <rect x="590" y="268" width="260" height="44" rx="8" class="w-box"/><text x="720" y="286" text-anchor="middle" class="t-h">Прикурювач 12 В</text><text x="720" y="302" text-anchor="middle" class="t-s">до 10 А, напряму від батареї (12–14.4 В)</text>
+      <path d="M425 360 H450 M540 360 H590" class="w-dcp" style="stroke-width:1.6"/><rect x="450" y="346" width="90" height="28" rx="6" class="w-box"/><text x="495" y="364" text-anchor="middle">5 А</text><text x="545" y="354" class="t-s">1 мм²</text>
+      <rect x="590" y="338" width="260" height="44" rx="8" class="w-box"/><text x="720" y="356" text-anchor="middle" class="t-h">DC5521 × 2</text><text x="720" y="372" text-anchor="middle" class="t-s">роутер, LED, камера — до 5 А сумарно</text>
+      <path d="M425 430 H590" class="w-dcp" style="stroke-width:1.4"/>
+      <rect x="590" y="408" width="260" height="44" rx="8" class="w-bat"/><text x="720" y="426" text-anchor="middle" class="t-h">Buck 12→5 В 3 А → ESP32‑S3 + TFT 3.5″</text><text x="720" y="442" text-anchor="middle" class="t-s">SOC, Вт, час · Wi‑Fi / Home Assistant</text>
+      <path d="M425 500 H590" class="w-dcp" style="stroke-width:1.4"/>
+      <rect x="590" y="478" width="260" height="44" rx="8" class="w-box"/><text x="720" y="496" text-anchor="middle" class="t-h">MOSFET → вентилятори 80 мм × 2</text><text x="720" y="512" text-anchor="middle" class="t-s">PWM від ESP32 за датчиками NTC</text>
+      <path d="M720 452 V478" class="w-sig"/>
+      <path d="M850 80 H875 M850 150 H875 M850 220 H875 M850 290 H875 M850 360 H875 M850 430 H875 M850 500 H875" class="w-dcn" style="stroke-width:1.6"/>
+    </g>
+    <path d="M590 420 H556 V398" class="w-sig"/><text x="430" y="395" class="t-s">UART ← JK BMS (GPS‑порт, TTL): В, А, SOC, °C</text>
+  </svg>
+  </div>
+  <div class="scroll" style="margin-top:14px"><table class="tbl">
+    <thead><tr><th>Вихід</th><th class="num">Струм</th><th class="num">Запобіжник</th><th class="num">Провід (+ і −)</th><th>Що важливо</th></tr></thead>
+    <tbody>
+      <tr><td>USB‑C PD 100 Вт ×2</td><td class="num">≈8.5 А кожен</td><td class="num">10 А</td><td class="num">1.5 мм²</td><td>Модуль має працювати від <b>9–30 В</b>. Батарея дає 10–14.6 В, і модулі «тільки 12 В» вимикаються на розрядженій батареї.</td></tr>
+      <tr><td>USB‑A QC3.0 ×2</td><td class="num">≈3 А</td><td class="num">5 А</td><td class="num">0.75 мм²</td><td>Можна взяти готову врізну панель «USB‑C + USB‑A + вольтметр».</td></tr>
+      <tr><td>Прикурювач 12 В</td><td class="num">до 10 А</td><td class="num">15 А</td><td class="num">2.5 мм²</td><td>Напряму від батареї, без стабілізатора. Для автохолодильника це нормально.</td></tr>
+      <tr><td>DC5521 ×2</td><td class="num">до 5 А</td><td class="num">5 А</td><td class="num">1 мм²</td><td>Роутеру на 12 В зазвичай достатньо, але деякі моделі не терплять 14.4 В під час заряду. Тоді ставте DC‑DC 12 В.</td></tr>
+      <tr><td>ESP32 + дисплей</td><td class="num">≈0.3 А</td><td class="num">3 А (F3)</td><td class="num">0.75 мм²</td><td>Живиться завжди. Без мережі споживає ≈4 Вт, тобто ≈1% батареї на добу.</td></tr>
+      <tr><td>Котушки реле</td><td class="num">≈0.15 А</td><td class="num">—</td><td class="num">0.5 мм²</td><td>Кнопка розмикає «+» котушки (85), а 86 іде на DC−. Паралельно котушці поставте діод 1N4007.</td></tr>
+    </tbody></table></div>
+  <p class="note">Групові реле потрібні, щоб вимкнені USB і 12 В нічого не споживали (модулі PD мають холостий струм 10–30 мА). Головну кнопку живлення на передній панелі підключіть до входу вмикання BMS, якщо він є у вашої моделі, а якщо ні — до потужного DC‑контактора. Переріз розраховано на довжину до 0.5 м.</p>
+</section>
+
 <section class="card">
   <h2>Комплектуючі та ціни</h2>
-  <p class="sub">Орієнтовні роздрібні ціни в Україні (prom.ua, rozetka, NKON), листопад 2026. Перед покупкою звірте на hotline.ua — ціни на комірки й інвертори коливаються на ±15–20%.</p>
+  <p class="sub">Ціни звірено з українськими магазинами (220volt, rozetka, prom.ua, eva.ua) та сайтами виробників. Імпортні позиції (PowMr, комірки з NKON) вказано з орієнтовною доставкою. Ціни коливаються на ±15–20%, тож перед покупкою перевірте їх ще раз.</p>
   <div class="tabs" id="bomTabs"></div>
   <div class="kpis" id="bomKpis"></div>
   <div class="scroll"><table class="tbl" id="bomTable"></table></div>
@@ -326,7 +386,7 @@ a{color:var(--blue)}
   <div class="bars" id="cmpBars"></div>
   <div class="grid2" style="margin-top:18px">
     <div class="card ok"><h3 style="margin-top:0">Що DIY робить краще</h3><ul class="tight">
-      <li>На 30–50% дешевше за кВт·год, а ємність на третину більша.</li>
+      <li>«Економ» дешевший за бренди на 30–45% за кВт·год, «Оптимальний» коштує приблизно стільки ж. Зате ємність на третину більша.</li>
       <li>Ремонтопридатність: кожен вузол стандартний, його можна замінити окремо.</li>
       <li>Апгрейд: другу батарею, MPPT або 24 В можна додати пізніше.</li>
       <li>Відкритий моніторинг (ESPHome, Home Assistant) без хмари виробника.</li>
@@ -379,58 +439,61 @@ a{color:var(--blue)}
 <script>
 const BOM = {
   econ: {
-    name: 'Економ', weight: '≈14.5 кг', power: '1500 Вт (пік 3000)', charge: '20 А · ≈5 год',
-    note: 'Вкладається в бюджет 20 000 грн. Тривале навантаження до ~1.3 кВт, заряд повільніший.',
+    name: 'Економ', weight: '≈15 кг', power: '1600 Вт (тривало ≈1.3 кВт)', charge: 'від мережі, вбудований',
+    note: 'Замість окремих інвертора, зарядного й реле — один блок «все‑в‑одному» з ДБЖ (PowMr). Так дешевше й простіше, але блок імпортний і без української гарантії. Компоновка в 3D показує модульний варіант, у цьому місце інвертора і зарядного займає один блок.',
     items: [
       ['Батарея', '4 × EVE LF105, 3.2 В 105 А·год, Grade A (1344 Вт·год)', 4, 1700],
       ['Батарея', 'Smart BMS 4S 150 А з Bluetooth (JBD / Daly)', 1, 1600],
-      ['Силова', 'Інвертор 12 В → 230 В, 1500 Вт, чиста синусоїда (пік 3000 Вт)', 1, 4500],
-      ['Силова', 'Зарядний пристрій LiFePO4 14.6 В 20 А', 1, 1500],
-      ['Силова', 'АВР: реле 230 В 16 А 2P (Finder 56.32) + колодка', 1, 450],
+      ['Силова', 'Інвертор‑зарядний PowMr POW‑HVM2H‑12V‑N 1600 Вт, чиста синусоїда, ДБЖ (≈$209 + доставка)', 1, 10000],
       ['Силова', 'Запобіжник ANL 150 А + тримач', 1, 350],
       ['Силова', 'Вимикач АКБ 300 А', 1, 350],
       ['Силова', 'Кабель 25 мм² (2 м) + мідні наконечники + термоусадка', 1, 600],
-      ['Виходи', 'Панель USB‑C PD 65 Вт + 2 × USB‑A QC3.0 (вхід 12 В)', 1, 450],
-      ['Виходи', 'Прикурювач 12 В + 2 × DC5521 + вимикач', 1, 250],
-      ['Виходи', 'Ввід IEC C14 з вимикачем + автомат 10 А + 2 розетки Schuko', 1, 450],
+      ['DC‑виходи', 'Врізна панель USB‑C PD + USB‑A QC3.0 + вольтметр (12–24 В)', 1, 380],
+      ['DC‑виходи', 'Прикурювач 12 В + 2 × DC5521', 1, 250],
+      ['DC‑виходи', 'Блок запобіжників 6 ліній, реле 12 В 40 А × 2, кнопки з фіксацією × 2', 1, 600],
+      ['DC‑виходи', 'Силіконовий провід 0.75–4 мм², клеми', 1, 250],
+      ['AC', 'Ввід IEC C14 + автомат 10 А + 2 розетки Schuko', 1, 450],
       ['Моніторинг', 'ESP32 + TFT 2.8″ + buck 5 В (ESPHome)', 1, 500],
       ['Корпус', 'Фанера 10 мм / алюм. кутик + ручка + ніжки + фарба', 1, 1200],
-      ['Корпус', 'Вентилятори 80 мм × 2 + термореле', 1, 200],
+      ['Корпус', 'Вентилятори 80 мм × 2 + MOSFET‑модуль', 1, 250],
       ['Корпус', 'Шини, стяжні пластини, шпильки, ізоляція, кріплення', 1, 400],
     ]
   },
   opt: {
-    name: 'Оптимальний', weight: '≈15.5 кг', power: '2000 Вт (пік 4000)', charge: '40 А · ≈2.5 год',
-    note: 'Рекомендований варіант саме під ваше ТЗ: 2 кВт, швидкий заряд, гарний корпус. Перевищує бюджет на ~8–9 тис. грн. Найбільше можна заощадити на корпусі (фанера) і дисплеї.',
+    name: 'Оптимальний', weight: '≈15.5 кг', power: '2000 Вт (тривало ≈1.5 кВт)', charge: '40 А · ≈2.5 год',
+    note: 'Модульна схема, як на 3D і кресленнях. Найдорожчі позиції — інвертор і зарядний. Інвертор 2 кВт з чистою синусоїдою в українських магазинах коштує 18–19 тис. (Lvyuan, Елім), тому тут закладено імпортний PowMr. Альтернатива: MUST PV18‑1512VPM за ≈14.4 тис. замінює інвертор, зарядний і реле одним блоком (1.5 кВт), але перевірте його габарити.',
     items: [
       ['Батарея', '4 × EVE LF105, Grade A, з QR‑кодами та тестом ємності', 4, 1800],
       ['Батарея', 'JK BMS B2A8S20P 200 А, активний баланс 2 А, BT + RS485', 1, 2550],
-      ['Силова', 'Інвертор 12 В → 230 В, 2000 Вт, чиста синусоїда (пік 4000 Вт)', 1, 7700],
-      ['Силова', 'Зарядний пристрій LiFePO4 14.6 В 40 А', 1, 2800],
-      ['Силова', 'АВР: Finder 56.32 230 В 16 А + DIN‑рейка + 2 автомати 10 А', 1, 700],
-      ['Силова', 'Запобіжник MRBF 200 А + тримач на клему', 1, 500],
-      ['Силова', 'Вимикач АКБ 300 А', 1, 450],
+      ['Силова', 'Інвертор PowMr POW‑HV2K‑12V‑EU 2000 Вт, чиста синусоїда (≈$129 + доставка)', 1, 7000],
+      ['Силова', 'Зарядний LogicPower LiFePO4 12 В (14.6 В) 40 А 480 Вт', 1, 5938],
+      ['Силова', 'АВР: Finder 56.32.8.230 + колодка на DIN + 2 автомати 10 А', 1, 1500],
+      ['Силова', 'Запобіжник Bussmann MRBF‑200 + клемний тримач', 1, 600],
+      ['Силова', 'Вимикач АКБ 300 А', 1, 700],
       ['Силова', 'Кабель 35 мм² (2 м) + мідні шини + наконечники', 1, 1000],
-      ['Виходи', '2 × USB‑C PD 100 Вт + 2 × USB‑A QC3.0 (модулі 12–24 В)', 1, 900],
-      ['Виходи', 'Прикурювач 12 В + 2 × DC5521 + вимикач з підсвіткою', 1, 300],
-      ['Виходи', 'Ввід IEC C14 + запобіжник + 2 розетки Schuko', 1, 500],
-      ['Моніторинг', 'ESP32‑S3 + TFT 3.5″ + buck 5 В (ESPHome, jk‑bms)', 1, 900],
+      ['DC‑виходи', '2 × USB‑C PD 100 Вт (вхід 9–30 В) + 2 × USB‑A QC3.0', 1, 1200],
+      ['DC‑виходи', 'Прикурювач 12 В + 2 × DC5521', 1, 300],
+      ['DC‑виходи', 'Блок запобіжників 6 ліній, реле 12 В 40 А × 2, кнопки 16 мм з LED × 3', 1, 800],
+      ['DC‑виходи', 'Силіконовий провід 0.75–4 мм², клеми', 1, 300],
+      ['AC', 'Ввід IEC C14 з вимикачем і запобіжником + 2 розетки Schuko', 1, 500],
+      ['Моніторинг', 'ESP32‑S3 + TFT 3.5″ + buck 5 В (ESPHome, jk‑bms)', 1, 1200],
       ['Корпус', 'Гнутий алюміній 2 мм + порошкове фарбування + ручка (або 3D‑друк ASA)', 1, 2500],
-      ['Корпус', 'Вентилятори 80 мм PWM × 2 + датчики NTC', 1, 350],
+      ['Корпус', 'Вентилятори 80 мм PWM × 2 + MOSFET + NTC', 1, 400],
       ['Корпус', 'Шини, стяжні пластини, шпильки, ізоляція, кріплення', 1, 600],
     ]
   },
   prem: {
     name: 'Преміум (Victron)', weight: '≈23 кг', power: '1300 Вт тривало (пік 3000)', charge: '70 А · ≈1.5 год',
-    note: 'Справжній ДБЖ‑інвертор із трансформатором: перемикання до 20 мс, заряд 70 А, надійність «на роки». Але важкий і дорогий — у такому разі розумніше купити бренд.',
+    note: 'Справжній ДБЖ‑інвертор із трансформатором: перемикання до 20 мс, заряд 70 А. Важкий і вдвічі дорожчий за бренди, тому для портативної станції не рекомендую.',
     items: [
       ['Батарея', '4 × EVE LF105, Grade A', 4, 1800],
       ['Батарея', 'JK BMS B2A8S20P 200 А, BT + RS485', 1, 2550],
-      ['Силова', 'Victron MultiPlus 12/1600/70 (інвертор + зарядний 70 А + ДБЖ)', 1, 33000],
-      ['Силова', 'Запобіжник MRBF 200 А + вимикач 300 А + кабель 35 мм²', 1, 1950],
-      ['Виходи', 'USB‑C PD 100 Вт × 2, USB‑A × 2, 12 В, DC5521', 1, 1200],
-      ['Виходи', 'Ввід IEC C14 + 2 розетки Schuko', 1, 500],
-      ['Моніторинг', 'ESP32‑S3 + TFT 3.5″ (VE.Bus через MK3‑адаптер — окремо)', 1, 900],
+      ['Силова', 'Victron MultiPlus 12/1600/70‑16 (інвертор + зарядний 70 А + ДБЖ)', 1, 42201],
+      ['Силова', 'Запобіжник MRBF 200 А + вимикач 300 А + кабель 35 мм²', 1, 2300],
+      ['DC‑виходи', 'USB‑C PD 100 Вт × 2, USB‑A × 2, 12 В, DC5521', 1, 1500],
+      ['DC‑виходи', 'Блок запобіжників, реле, кнопки, провід', 1, 1100],
+      ['AC', 'Ввід IEC C14 + 2 розетки Schuko', 1, 500],
+      ['Моніторинг', 'ESP32‑S3 + TFT 3.5″', 1, 1200],
       ['Корпус', 'Алюміній 2 мм + фарбування + 2 ручки + вентилятори', 1, 3200],
       ['Корпус', 'Кріплення, ізоляція, шини', 1, 600],
     ]
@@ -467,7 +530,7 @@ renderBom('opt');
 
 (function renderCmp() {
   const diy = [
-    ['PowerBox DIY · Економ', 1344, '1500 (пік 3000)', '14.5', '10–15 мс (реле)', '≈5 год', total('econ'), true],
+    ['PowerBox DIY · Економ', 1344, '1600 (≈1.3 тривало)', '15', '≈10 мс (вбудований)', '≈3–5 год', total('econ'), true],
     ['PowerBox DIY · Оптимальний', 1344, '2000 (≈1.3–1.5 тривало)', '15.5', '10–15 мс (реле)', '≈2.5 год', total('opt'), true],
   ];
   const rows = [...BRANDS, ...diy];
